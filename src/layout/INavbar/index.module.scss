@@ -1,0 +1,16 @@
+.iNavbar {
+  flex-shrink: 0;
+  height: 70px;
+  background: var(--adm-color-background);
+  border-bottom: 1px solid var(--adm-border-color);
+
+  :global {
+
+    // .adm-nav-bar-left,
+    .adm-nav-bar-right {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+  }
+}

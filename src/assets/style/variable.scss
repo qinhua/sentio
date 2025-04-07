@@ -1,0 +1,98 @@
+$bg_color: var(--bg-color);
+$bgcolor_minor: #232323;
+$current_page_color: var(--current-page-color);
+$current_font-family: var(--current-font-family);
+
+$color_purple: #8000ff;
+$color_purple_dark: #6000bf;
+
+$color_white: #ffffff;
+$color_white_dark: #efdeff;
+
+$color_yellow: #ffed49;
+$color_yellow_dark: #e8d73c;
+
+$color_grey: #5c5c5c;
+$color_grey_dark: #424242;
+
+%safe-margin-top {
+  margin-top: constant(safe-area-inset-top, 0);
+  margin-top: env(safe-area-inset-top, 0);
+}
+
+%safe-margin-bottom {
+  margin-bottom: constant(safe-area-inset-bottom, 0);
+  margin-bottom: env(safe-area-inset-top, 0);
+}
+
+%safe-padding-top {
+  padding-top: constant(safe-area-inset-top, 0);
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+%safe-padding-bottom {
+  padding-bottom: constant(safe-area-inset-bottom, 0);
+  padding-bottom: env(safe-area-inset-top, 0);
+}
+
+%flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+%flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+%flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+%flex-center-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+%flex-space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+%flex-space-around {
+  display: flex;
+  justify-content: space-around;
+}
+
+%flex-space-evenly {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+%ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+%no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// mixin
+@mixin clamp($line) {
+  display: -webkit-box;
+  -webkit-line-clamp: $line;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

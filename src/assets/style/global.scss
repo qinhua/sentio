@@ -1,0 +1,117 @@
+@use './theme';
+@use './animate';
+
+html {
+  height: 100vh;
+}
+
+body {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto !important;
+  height: 100%;
+  overflow: hidden;
+  font-size: var(--adm-font-size-main) !important;
+
+  * {
+    // font-family: $current_font-family !important;
+    box-sizing: border-box;
+    font-display: swap;
+    user-select: none;
+  }
+
+  img {
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+}
+
+#root {
+  width: 100%;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--adm-color-background);
+  @extend %safe-padding-top;
+  /* 添加这些属性 */
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+// 内容区 - Start
+.i-content {
+  width: 100%;
+  // max-width: 500px;
+  margin: 0 auto;
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch; // 增加 iOS 滚动的流畅度
+  overscroll-behavior: none; // 防止过度滚动
+  position: relative;
+}
+
+// 内容区 - End
+
+// 弹窗/抽屉 - Start
+.adm-popup {
+  .adm-mask {
+    backdrop-filter: blur(4px);
+  }
+}
+
+// Toast - Start
+.adm-toast-mask {
+  .adm-toast-main {
+    width: fit-content;
+    min-width: 125px;
+    max-width: 600px;
+    padding: 14px 16px;
+    font-size: 14px;
+    backdrop-filter: blur(5px);
+    border-radius: 24px;
+
+    .adm-toast-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    // .adm-auto-center {
+    // padding-top: 5px;
+    // }
+  }
+}
+
+// Toast - End
+
+// React Toastify CSS - start
+.Toastify__toast-container {
+  position: fixed;
+  z-index: 2000 !important;
+  top: 1em !important;
+  left: 50% !important;
+  width: fit-content;
+  max-width: 96vw;
+  transform: translateX(-50%) !important;
+  padding: 4px;
+
+  .Toastify__toast {
+    width: fit-content;
+    min-width: 100px;
+    min-height: 40px;
+    padding: 4px 8px 4px 8px;
+    font-weight: 500;
+    border-radius: 8px;
+  }
+}
+
+// React Toastify CSS - End
