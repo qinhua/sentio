@@ -107,7 +107,7 @@ const Profile: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* 顶部用户信息区域 */}
-      <div className="fixed top-0 w-full bg-white shadow-sm z-10 pt-4 pb-5 px-4">
+      <div className="fixed top-0 w-full max-w-[500px] bg-white shadow-sm z-10 pt-4 pb-5 px-4">
         <div className="flex items-center">
           <Avatar className="h-16 w-16 border-2 border-primary/20">
             <AvatarImage

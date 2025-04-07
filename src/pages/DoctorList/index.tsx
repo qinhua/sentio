@@ -186,15 +186,15 @@ const DoctorList: React.FC = () => {
       {!selectedDoctor ? (
         // 心理医生选择页面
         <div className="flex flex-col h-full">
-          <div className="fixed top-0 w-full bg-white shadow-sm z-10 px-4 py-3">
+          <div className="fixed top-0 w-full max-w-[500px] bg-white shadow-sm z-10 px-4 py-2">
             <h1 className="text-xl font-semibold text-center">
               选择你的心理医生
             </h1>
-            <p className="text-sm text-gray-500 text-center mt-1">
+            <p className="text-xs text-gray-500 text-center mt-1">
               {formatDate()}
             </p>
           </div>
-          <div className="mt-20 mb-4 px-4">
+          <div className="mt-18 mb-4 px-4">
             <ScrollArea className="h-[calc(100vh-140px)]">
               <div className="space-y-4 py-2">
                 {doctors.map(doctor => (

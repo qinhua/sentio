@@ -152,21 +152,20 @@ const CourseList: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* 顶部导航栏 */}
-      <div className="fixed top-0 w-full bg-white shadow-sm z-10 px-4 py-3">
-        <div className="flex items-center justify-between">
-          <a
+      <div className="fixed top-0 w-full max-w-[500px] bg-white shadow-sm z-10 px-4 py-3">
+        <div className="flex items-center justify-center">
+          {/* <a
             href="https://readdy.ai/home/bea5e568-cad4-4137-843c-ef3e1daaeb3c/30aaca23-5946-4aa9-9438-decb053ece3c"
             data-readdy="true"
             className="text-gray-600 cursor-pointer"
           >
             <i className="fa fa-arrow-left"></i>
-          </a>
+          </a> */}
           <h1 className="text-xl font-semibold">心理课程</h1>
-          <div className="w-8"></div>
         </div>
       </div>
       {/* 搜索区域 */}
-      <div className="fixed top-14 w-full bg-white z-10 px-4 py-3 shadow-sm">
+      <div className="fixed top-12 w-full max-w-[500px] bg-white z-10 px-4 py-3 shadow-sm">
         <div className="relative">
           <i className="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"></i>
           <Input
@@ -179,7 +178,7 @@ const CourseList: React.FC = () => {
         </div>
       </div>
       {/* 分类筛选 */}
-      <div className="fixed top-28 w-full bg-white z-10 shadow-sm">
+      <div className="fixed top-26 w-full max-w-[500px] bg-white z-10 shadow-sm">
         {/* @ts-ignore */}
         <ScrollArea className="w-full" orientation="horizontal">
           <div
@@ -207,7 +206,7 @@ const CourseList: React.FC = () => {
         </ScrollArea>
       </div>
       {/* 课程列表 */}
-      <ScrollArea className="flex-1 pt-44 pb-4">
+      <ScrollArea className="flex-1 pt-40 pb-4">
         <div className="px-4 py-2 space-y-4 mb-4">
           {filteredCourses.length > 0 ? (
             filteredCourses.map(course => (

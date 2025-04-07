@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
+import { useNavigate } from 'react-router-dom'
 
 const ChatDetail: React.FC = () => {
   const [message, setMessage] = useState('')
@@ -82,6 +83,12 @@ const ChatDetail: React.FC = () => {
       isFirstOfDay: true
     }
   ])
+  const navigate = useNavigate()
+
+  const handleBack = () => {
+    navigate(-1)
+  }
+
   const handleSendMessage = () => {
     if (message.trim() === '') return
     const newMessage = {
@@ -116,15 +123,11 @@ const ChatDetail: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* 顶部导航栏 */}
-      <div className="fixed top-0 w-full bg-white shadow-sm z-10 px-4 py-3">
+      <div className="fixed top-0 w-full max-w-[500px] bg-white shadow-sm z-10 px-4 py-3">
         <div className="flex items-center">
-          <a
-            href="https://readdy.ai/home/bea5e568-cad4-4137-843c-ef3e1daaeb3c/273149fd-2c35-4a13-a8ba-4a1554b39c0f"
-            data-readdy="true"
-            className="cursor-pointer mr-3"
-          >
+          <div onClick={handleBack} className="cursor-pointer mr-3">
             <i className="fa fa-arrow-left text-gray-700"></i>
-          </a>
+          </div>
           <div className="flex items-center flex-1">
             <Avatar className="h-10 w-10 mr-3">
               <AvatarImage

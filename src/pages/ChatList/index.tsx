@@ -15,6 +15,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
+import { useNavigate } from 'react-router-dom'
+import { PATH } from '@/constants/path'
 
 const ChatList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
@@ -106,6 +108,8 @@ const ChatList: React.FC = () => {
   const touchEndX = useRef<number | null>(null)
   const swipedItemRef = useRef<number | null>(null)
   const [swipeStates, setSwipeStates] = useState<Record<number, boolean>>({})
+  const navigate = useNavigate()
+
   const handleTouchStart = (e: React.TouchEvent, chatId: number) => {
     touchStartX.current = e.touches[0].clientX
     // Reset other swiped items
@@ -186,7 +190,7 @@ const ChatList: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* 顶部导航栏 */}
-      <div className="fixed top-0 w-full bg-white shadow-sm z-10 px-4 py-3">
+      <div className="fixed top-0 w-full max-w-[500px] bg-white shadow-sm z-10 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="w-8"></div>
           <h1 className="text-xl font-semibold">聊天</h1>
@@ -200,7 +204,7 @@ const ChatList: React.FC = () => {
         </div>
       </div>
       {/* 搜索区域 */}
-      <div className="fixed top-14 w-full bg-white z-10 px-4 py-3 shadow-sm">
+      <div className="fixed top-14 w-full max-w-[500px] bg-white z-10 px-4 py-3 shadow-sm">
         <div className="relative">
           <i className="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"></i>
           <Input
@@ -232,9 +236,7 @@ const ChatList: React.FC = () => {
                     <i className="fa fa-trash-alt"></i>
                   </div>
                   {/* Chat item */}
-                  <a
-                    href="https://readdy.ai/home/bea5e568-cad4-4137-843c-ef3e1daaeb3c/997cd8bc-08ef-470f-8f73-ff70917a6dad"
-                    data-readdy="true"
+                  <div
                     className={`flex items-center py-3 cursor-pointer hover:bg-gray-50 px-1 rounded-lg bg-white transition-transform duration-200 ease-out w-full`}
                     style={{
                       transform: swipeStates[chat.id]
@@ -246,6 +248,7 @@ const ChatList: React.FC = () => {
                         e.preventDefault()
                         resetSwipe(chat.id)
                       }
+                      navigate(PATH.chatDetail)
                     }}
                   >
                     <div className="relative mr-3 flex-shrink-0">
@@ -281,7 +284,7 @@ const ChatList: React.FC = () => {
                         )}
                       </div>
                     </div>
-                  </a>
+                  </div>
                 </div>
                 <Separator />
               </React.Fragment>

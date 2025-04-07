@@ -3,6 +3,7 @@
 
 html {
   height: 100vh;
+  background: #252525;
 }
 
 body {
@@ -38,12 +39,12 @@ body {
   background: var(--adm-color-background);
   @extend %safe-padding-top;
   /* 添加这些属性 */
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 100%;
+  // position: fixed;
+  // left: 0;
+  // right: 0;
+  // top: 0;
+  // bottom: 0;
+  // width: 100%;
 }
 
 // 内容区 - Start

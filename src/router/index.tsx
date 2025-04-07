@@ -3,6 +3,7 @@ import {
   PageLogin,
   PageDoctorList,
   PageChatList,
+  PageChatDetail,
   PageCourseList,
   PageProfile,
   Page404
@@ -27,6 +28,10 @@ export default function Router() {
     {
       path: 'chat-list',
       element: <PageChatList />
+    },
+    {
+      path: 'chat-detail',
+      element: <PageChatDetail />
     },
     {
       path: 'course-list',
