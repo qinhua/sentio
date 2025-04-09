@@ -20,7 +20,7 @@ export const useGPT = () => {
   )
 
   const sendMessage = useCallback(
-    async (message: string) => {
+    async (message: string, onStreamUpdate?: (content: string) => void) => {
       setIsLoading(true)
       setError(null)
 
@@ -30,28 +30,38 @@ export const useGPT = () => {
         const updatedHistory = [...conversationHistory, userMessage]
         setConversationHistory(updatedHistory)
 
-        // 调用 OpenAI API
-        const completion = await openai.chat.completions.create({
+        // 调用 OpenAI API 使用流式响应
+        const stream = await openai.chat.completions.create({
           messages: [
             { role: 'system', content: '请始终使用中文回复。' },
             ...updatedHistory
           ],
           model: 'gpt-4o',
+          stream: true,
           temperature: 1,
-          max_tokens: 500
+          max_tokens: 600
         })
 
-        const response =
-          completion.choices[0]?.message?.content || '抱歉，我现在无法回答。'
+        let fullResponse = ''
+
+        // 处理流式响应
+        for await (const chunk of stream) {
+          const content = chunk.choices[0]?.delta?.content || ''
+          if (content) {
+            fullResponse += content
+            // 调用回调函数更新UI
+            onStreamUpdate?.(fullResponse)
+          }
+        }
 
         // 添加助手回复到历史记录
         const assistantMessage: GPTMessage = {
           role: 'assistant',
-          content: response
+          content: fullResponse
         }
         setConversationHistory(prev => [...prev, assistantMessage])
 
-        return response
+        return fullResponse
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : '发生错误，请重试'

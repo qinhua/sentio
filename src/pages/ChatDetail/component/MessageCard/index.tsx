@@ -55,10 +55,10 @@ const MessageCard: React.FC<MessageCardProps> = ({
             className={classNames(styles.bubble, {
               [styles.userBubble]: sender === 'user',
               [styles.counselorBubble]: sender === 'counselor',
-              [styles.loadingBubble]: isLoading
+              [styles.loadingBubble]: isLoading && !text
             })}
           >
-            {isLoading ? (
+            {isLoading && !text ? (
               <div className={styles.loadingIndicator}>
                 <span className={styles.loadingDot}></span>
                 <span className={styles.loadingDot}></span>
@@ -66,8 +66,10 @@ const MessageCard: React.FC<MessageCardProps> = ({
               </div>
             ) : (
               <>
-                <div className={styles.messageText}>{text}</div>
-                {sender === 'counselor' && (
+                <div className={styles.messageText}>
+                  {text || (isLoading ? '正在思考...' : '')}
+                </div>
+                {sender === 'counselor' && text && (
                   <button
                     className={classNames(styles.speakButton, {
                       [styles.speaking]: isSpeaking

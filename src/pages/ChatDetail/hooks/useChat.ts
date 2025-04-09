@@ -137,7 +137,7 @@ export const useChat = (doctor: DoctorItem) => {
       messagesRef.current = []
       introductionSentRef.current = false
     }
-  }, [doctor.id])
+  }, [doctor?.id])
 
   // 如果是第一次聊天，发送医生的介绍
   useEffect(() => {
@@ -173,7 +173,7 @@ export const useChat = (doctor: DoctorItem) => {
         setIsTyping(true)
 
         // 添加GPT正在输入的消息
-        const gptLoadingMessage = addMessage('正在思考...', 'counselor', true)
+        const gptLoadingMessage = addMessage('', 'counselor', true)
         gptLoadingMessageId = gptLoadingMessage.id
 
         // 准备发送给 GPT 的消息，确保消息顺序正确
@@ -196,34 +196,48 @@ export const useChat = (doctor: DoctorItem) => {
           }
         ]
 
-        // 调用 GPT API
-        const response = await chat({
-          messages: messagesToSend
-        })
+        // 调用 GPT API 并处理流式响应
+        let finalResponse = ''
+        let hasError = false
 
-        if (!response || !response.choices || response.choices.length === 0) {
-          throw new Error('Invalid response from GPT')
+        try {
+          await chat({
+            messages: messagesToSend,
+            onStreamUpdate: streamContent => {
+              // 更新 GPT 消息内容，但在流式输出时保持 isLoading 为 true
+              if (gptLoadingMessageId && !hasError) {
+                finalResponse = streamContent
+                updateMessage(gptLoadingMessageId, streamContent, true)
+              }
+            }
+          })
+        } catch (streamError) {
+          hasError = true
+          console.error('Stream error:', streamError)
+          throw streamError // 重新抛出错误以便外层 catch 块处理
         }
 
-        // 更新 GPT 回应
-        const gptResponse = response.choices[0].message.content
-        if (gptLoadingMessageId) {
-          updateMessage(gptLoadingMessageId, gptResponse, false)
+        // 流式输出完成后，将最后一条消息的 isLoading 设置为 false
+        if (gptLoadingMessageId && !hasError) {
+          // 使用最终响应内容，而不是从消息列表中获取
+          updateMessage(gptLoadingMessageId, finalResponse, false)
         }
       } catch (error) {
         console.error('Error sending message:', error)
 
-        // 更新错误状态的消息
+        // 更新错误状态的消息，确保消息分配给正确的发送者
         setMessages(prevMessages => {
           const newMessages = prevMessages.map(msg => {
+            // 只处理加载中的消息
             if (msg.isLoading) {
+              // 根据发送者类型设置不同的错误消息
               if (msg.sender === 'user') {
                 return {
                   ...msg,
                   text: '消息发送失败，请重试',
                   isLoading: false
                 }
-              } else {
+              } else if (msg.sender === 'counselor') {
                 return {
                   ...msg,
                   text: '抱歉，我遇到了一些问题。请稍后再试。',

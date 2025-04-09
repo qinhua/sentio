@@ -116,9 +116,14 @@ body {
   top: 1em !important;
   left: 50% !important;
   width: fit-content;
+  min-width: 340px;
   max-width: 450px;
   transform: translateX(-50%) !important;
   padding: 4px;
+
+  @media screen and (min-width: 500px) {
+    max-width: 460px;
+  }
 
   .Toastify__toast {
     width: fit-content;
