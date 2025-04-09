@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 
 export const useTextToSpeech = () => {
   const [isSpeaking, setIsSpeaking] = useState(false)
@@ -65,6 +65,13 @@ export const useTextToSpeech = () => {
     },
     [isSpeaking, initSpeechSynthesis, stopSpeaking]
   )
+
+  // 在组件卸载时停止语音
+  useEffect(() => {
+    return () => {
+      stopSpeaking()
+    }
+  }, [stopSpeaking])
 
   return {
     speak,

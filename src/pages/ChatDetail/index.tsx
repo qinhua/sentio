@@ -151,6 +151,25 @@ const ChatDetail: React.FC = () => {
     }
   }, [messages])
 
+  // 监听页面可见性变化，在页面隐藏时停止语音播放
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // 停止所有语音播放
+        const speechSynthesis = window.speechSynthesis
+        if (speechSynthesis) {
+          speechSynthesis.cancel()
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [])
+
   // 使用 useMemo 缓存消息列表，避免不必要的重新渲染
   const messageCards = useMemo(() => {
     return messages.map(msg => <MessageCard key={msg.id} data={msg} />)

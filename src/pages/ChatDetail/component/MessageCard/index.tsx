@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Avatar } from 'antd-mobile'
 import { useTextToSpeech } from '../../hooks/useTextToSpeech'
 import { MessageItem } from '../../types'
@@ -19,6 +19,21 @@ const MessageCard: React.FC<MessageCardProps> = ({
 }) => {
   const { isLoading, isFirstOfDay, avatar, sender, text, date, time } = data
   const { speak, stopSpeaking, isSpeaking } = useTextToSpeech()
+
+  // 监听页面可见性变化
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && isSpeaking) {
+        stopSpeaking()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [isSpeaking, stopSpeaking])
 
   const handleSpeakClick = (e: React.MouseEvent) => {
     e.stopPropagation() // 防止触发卡片的点击事件
