@@ -1,9 +1,9 @@
 import React from 'react'
 import { Avatar, Tag } from 'antd-mobile'
+import { MessageItem } from '../../types'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import styles from './index.module.scss'
-import { MessageItem } from '../../index'
 
 interface MessageCardProps {
   data: MessageItem
@@ -16,7 +16,7 @@ const MessageCard: React.FC<MessageCardProps> = ({
   className,
   onClick
 }) => {
-  const { isFirstOfDay, sender, text, message, date, time } = data
+  const { isFirstOfDay, sender, text, date, time } = data
 
   return (
     <div

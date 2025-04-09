@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { Button, Swiper, SwiperRef } from 'antd-mobile'
 import DoctorCard from './component/DoctorCard'
 import { DOCTOR_LIST } from '@/constants/common'
@@ -22,14 +22,6 @@ const DoctorList: React.FC = () => {
   const [selectedDoctor, setSelectedDoctor] = useState<DoctorItem>(
     DOCTOR_LIST[1]
   )
-  const [messages, setMessages] = useState<
-    {
-      id: number
-      content: string
-      sender: 'user' | 'doctor'
-      timestamp: string
-    }[]
-  >([])
   const navigate = useNavigate()
 
   const handleDoctorChange = (index: number) => {
@@ -42,7 +34,11 @@ const DoctorList: React.FC = () => {
   }
 
   const handleCommunicate = () => {
-    navigate(PATH.chatDetail())
+    navigate(PATH.chatDetail(selectedDoctor.id), {
+      state: {
+        doctor: selectedDoctor
+      }
+    })
   }
 
   return (

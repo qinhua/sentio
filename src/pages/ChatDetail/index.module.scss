@@ -32,28 +32,28 @@
     display: flex;
     align-items: center;
     flex: 1;
+  }
 
-    .avatar {
-      --size: 38px;
-      border-radius: 50%;
-      margin-right: 10px;
-      object-fit: cover;
+  .avatar {
+    --size: 38px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+  }
+
+  .info {
+    .name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--adm-color-text);
     }
 
-    .info {
-      .name {
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--adm-color-text);
-      }
-
-      .style {
-        margin-top: 1px;
-        font-size: 10px;
-        color: #fff;
-        padding: 2px 4px;
-        border-radius: 4px;
-      }
+    .style {
+      margin-top: 1px;
+      font-size: 10px;
+      color: #fff;
+      padding: 2px 4px;
+      border-radius: 4px;
     }
   }
 
@@ -72,8 +72,6 @@
   overflow-y: auto;
 }
 
-
-
 .inputArea {
   position: fixed;
   bottom: 0;
@@ -88,7 +86,9 @@
   background-color: #fff;
   border-top: 1px solid #eee;
 
-  .fileButton {
+  .actionButton {
+    -webkit-appearance: none;
+    appearance: none;
     width: 34px;
     height: 34px;
     display: flex;
@@ -97,19 +97,65 @@
     color: var(--adm-color-text-secondary);
     font-size: 16px;
     background-color: #f5f5f5;
+    border: none;
     border-radius: 50%;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #e5e5e5;
+    }
   }
 
+  // .fileButton {
+
+  // }
+
+  // .micButton {
+
+  // }
+
   .micButton {
-    width: 34px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--adm-color-text-secondary);
-    font-size: 16px;
-    background-color: #f5f5f5;
-    border-radius: 50%;
+
+    &.recording {
+      font-size: 12px;
+      color: #ff4d4f;
+      background-color: #ffd7c7;
+      animation: flash 0.5s infinite alternate;
+
+      &:hover {
+        background-color: #ffd7c7;
+      }
+
+      // .micButtonIcon {
+      // animation: pulse 1.2s infinite;
+      // }
+
+    }
+  }
+
+  @keyframes flash {
+    0% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0.7;
+    }
+
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.1);
+    }
+
+    100% {
+      transform: scale(1);
+    }
   }
 
   .inputer {
@@ -123,12 +169,17 @@
   }
 
   .sendButton {
-    width: 34px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--adm-color-primary);
+    background-color: unset;
+    color: var(--adm-color-primary) !important;
     font-size: 18px;
+
+    &:hover {
+      color: #ce83f7 !important;
+      background-color: unset;
+    }
+
+    &[disabled] {
+      opacity: 0.7;
+    }
   }
 }
