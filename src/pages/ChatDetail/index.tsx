@@ -3,6 +3,7 @@ import { Avatar, Input, Toast, Dialog } from 'antd-mobile'
 import MessageCard from './component/MessageCard'
 import { Icon } from '@iconify/react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useChatList } from '../ChatList/hooks/useChatList'
 import { useVoice } from './hooks/useVoice'
 import { useChat } from './hooks/useChat'
 import { useGPT } from './hooks/useGPT'
@@ -34,6 +35,7 @@ const ChatDetail: React.FC = () => {
     sendMessage: sendGPTMessage
     // sendVoiceMessage
   } = useGPT()
+  const { updateChat } = useChatList()
 
   // 显示错误提示
   useEffect(() => {
@@ -54,6 +56,26 @@ const ChatDetail: React.FC = () => {
       // })
     }
   }, [error])
+
+  // 更新聊天列表
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      updateChat({
+        chat_id: doctor.id,
+        id: doctor.id,
+        name: doctor.name,
+        avatar: doctor.avatar,
+        style: doctor.style,
+        color: doctor.color,
+        expertise: doctor.expertise,
+        description: doctor.description,
+        last_message: lastMessage.text,
+        time: Date.now(),
+        unread: lastMessage.sender === 'counselor' ? 1 : 0
+      })
+    }
+  }, [messages, doctor, updateChat])
 
   const handleBack = () => {
     navigate(-1)
