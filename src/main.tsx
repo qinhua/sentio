@@ -6,12 +6,13 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import timezone from 'dayjs/plugin/timezone'
 import duration from 'dayjs/plugin/duration'
 import utcTime from 'dayjs/plugin/utc'
-// import '@/addons/flexible'
+import '@/addons/flexible'
 import dayjs from 'dayjs'
 import 'antd-mobile/es/global'
 import 'react-toastify/dist/ReactToastify.css'
-import '@/assets/style/index.css'
+// import '@/assets/style/index.css'
 import '@/assets/style/global.scss'
+import '@fontsource/pacifico'
 
 dayjs.extend(relativeTime)
 dayjs.extend(duration)

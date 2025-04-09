@@ -1,20 +1,21 @@
 html {
-  font-family: var(--adm-font-family);
+  &:root {
+    --adm-color-primary: #d795fb;
+    //  --adm-font-family: -apple-system,
+    //     Inter,
+    //     'Helvetica Neue',
+    //     helvetica,
+    //     segoe ui,
+    //     arial,
+    //     roboto,
+    //     'PingFang SC',
+    //     'miui',
+    //     'Hiragino Sans GB',
+    //     'Microsoft Yahei'
+    //     sans-serif;
+  }
 
-  // &:root {
-  //   --adm-font-family: -apple-system,
-  //     Inter,
-  //     'Helvetica Neue',
-  //     helvetica,
-  //     segoe ui,
-  //     arial,
-  //     roboto,
-  //     'PingFang SC',
-  //     'miui',
-  //     'Hiragino Sans GB',
-  //     'Microsoft Yahei'
-  //     sans-serif;
-  // }
+  // font-family: var(--adm-font-family);
 
   &[data-prefers-color-scheme='light'] {
     // antd-mobile 内置变量
@@ -23,7 +24,7 @@ html {
     --adm-radius-l: 12px;
     --adm-radius-xl: 16px;
 
-    --adm-color-primary: #826ff2;
+    --adm-color-primary: #d795fb;
     --adm-color-text-secondary: #918E91;
     --adm-border-color: #ddd;
     --adm-color-background: #ffffff;
@@ -43,7 +44,7 @@ html {
     --adm-radius-l: 12px;
     --adm-radius-xl: 16px;
 
-    --adm-color-primary: #826ff2;
+    --adm-color-primary: #d795fb;
     --adm-color-text-secondary: #b3b3b3;
     --adm-border-color: #2b2b2b;
     --adm-color-background: #1a1a1a;

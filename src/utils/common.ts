@@ -342,3 +342,8 @@ export function genUniqueId(prefix = '') {
 export function isEvmAddress(address: string) {
   return /^0x[a-fA-F0-9]{40}$/.test(address)
 }
+
+export function alphaColor(color: string, opacity: number) {
+  const _opacity = Math.round(Math.min(Math.max(opacity ?? 1, 0), 1) * 255)
+  return color + _opacity.toString(16).toUpperCase()
+}

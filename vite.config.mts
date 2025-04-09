@@ -1,9 +1,9 @@
 import { ConfigEnv, UserConfigExport, defineConfig } from 'vite'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { ViteEjsPlugin } from 'vite-plugin-ejs'
-// import postCssPxToRem from 'postcss-pxtorem'
+import postCssPxToRem from 'postcss-pxtorem'
 import vitePluginImp from 'vite-plugin-imp'
-import tailwindcss from '@tailwindcss/vite'
+// import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 // @ts-ignore
@@ -31,7 +31,8 @@ export default ({ mode, command, isSsrBuild }: ConfigEnv) => {
     root: getPath(__dirname),
     resolve: {
       alias: {
-        '@': getPath('src')
+        '@': getPath('src'),
+        src: getPath('src')
       }
     },
     css: {
@@ -41,19 +42,19 @@ export default ({ mode, command, isSsrBuild }: ConfigEnv) => {
           // import语句后面的;不能省略，不然全局样式不生效
           additionalData: `@use "@/assets/style/variable.scss" as *;`
         }
+      },
+      postcss: {
+        plugins: [
+          postCssPxToRem({
+            rootValue: 37.5, // 设计稿/10 即 1rem
+            unitPrecision: 3, // 允许rem单位增长到十进制数字，小数点后保留的位数
+            propList: ['*', '!border'], // 除 border 外所有 px 转 rem
+            exclude: /node_modules/i,
+            mediaQuery: false, //（布尔值）允许在媒体查询中转换px。
+            minPixelValue: 2 //设置要替换的最小像素值
+          })
+        ]
       }
-      // postcss: {
-      //   plugins: [
-      //     postCssPxToRem({
-      //       rootValue: 37.5, // 设计稿/10 即 1rem
-      //       unitPrecision: 3, // 允许rem单位增长到十进制数字，小数点后保留的位数
-      //       propList: ['*', '!border'], // 除 border 外所有 px 转 rem
-      //       exclude: /node_modules/i,
-      //       mediaQuery: false, //（布尔值）允许在媒体查询中转换px。
-      //       minPixelValue: 2 //设置要替换的最小像素值
-      //     })
-      //   ]
-      // }
     },
     plugins: [
       ViteEjsPlugin({
@@ -62,7 +63,7 @@ export default ({ mode, command, isSsrBuild }: ConfigEnv) => {
       }),
       nodePolyfills(),
       react(),
-      tailwindcss(),
+      // tailwindcss(),
       vitePluginImp({
         libList: [
           {

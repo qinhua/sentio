@@ -1,0 +1,119 @@
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  overflow: hidden;
+  background-image: linear-gradient(0deg, #fff 40%, #e9c2fe 100%);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 20% 20px 30px;
+  overflow-y: auto;
+  gap: 40px;
+}
+
+.baseInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.avatarCon {
+  position: relative;
+
+  .avatar {
+    --size: 90px;
+    --border-radius: 50%;
+  }
+
+  .gender {
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+    font-size: 18px;
+  }
+
+}
+
+.name {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--adm-color-text);
+}
+
+.bio {
+  min-height: 100px;
+  padding: 0 20px;
+  font-size: 14px;
+  color: var(--adm-color-text-secondary);
+}
+
+.buttonGroup {
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  :global {
+    .adm-button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 30px;
+      overflow: hidden;
+      font-size: 14px;
+      color: #333;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 50px;
+      transition: all 0.5s ease;
+
+      &:hover {
+        color: #333;
+        border: 1px solid #888;
+      }
+
+      >span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      svg {
+        margin-right: 8px;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+.buttonEdit {
+  color: #fff !important;
+  background-color: #111 !important;
+
+  &:hover {
+    border: 1px solid #111 !important;
+  }
+}
+
+.buttonLogout {
+  color: #777 !important;
+
+  &:hover {
+    color: #333 !important;
+    border: 1px solid #777 !important;
+  }
+
+}

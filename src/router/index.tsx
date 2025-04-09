@@ -1,59 +1,112 @@
-import { useRoutes } from 'react-router-dom'
+import { Navigate, useRoutes } from 'react-router-dom'
+import RootRedirect from '@/router/RootRedirect'
+import RequireAuth from '@/router/RequireAuth'
+import AuthGuard from '@/router/AuthGuard'
+import { IS_DEV_ENV } from '@/config/env'
 import {
   PageLogin,
+  PageWelcome,
+  PageCompleteInfo,
   PageDoctorList,
   PageChatList,
   PageChatDetail,
   PageCourseList,
   PageProfile,
-  Page404
-  // PageComps
+  PageEditProfile,
+  Page404,
+  PageComps
 } from './pages'
-// import { IS_DEV_ENV } from '@/config/env'
 
 export default function Router() {
   const routers = [
     {
       path: '/',
-      element: <PageLogin />
+      element: <RootRedirect />
     },
     {
       path: 'login',
       element: <PageLogin />
     },
     {
+      path: 'welcome',
+      element: (
+        <AuthGuard>
+          <PageWelcome />
+        </AuthGuard>
+      )
+    },
+    {
+      path: 'complete-info',
+      element: (
+        <AuthGuard>
+          <PageCompleteInfo />
+        </AuthGuard>
+      )
+    },
+    {
       path: 'doctor-list',
-      element: <PageDoctorList />
+      element: (
+        <RequireAuth>
+          <PageDoctorList />
+        </RequireAuth>
+      )
     },
     {
       path: 'chat-list',
-      element: <PageChatList />
+      element: (
+        <RequireAuth>
+          <PageChatList />
+        </RequireAuth>
+      )
     },
     {
-      path: 'chat-detail',
-      element: <PageChatDetail />
+      path: 'chat-detail/:doctorId',
+      element: (
+        <RequireAuth>
+          <PageChatDetail />
+        </RequireAuth>
+      )
     },
     {
       path: 'course-list',
-      element: <PageCourseList />
+      element: (
+        <RequireAuth>
+          <PageCourseList />
+        </RequireAuth>
+      )
     },
     {
       path: 'profile',
-      element: <PageProfile />
+      element: (
+        <RequireAuth>
+          <PageProfile />
+        </RequireAuth>
+      )
     },
-    // ...(IS_DEV_ENV
-    //   ? [
-    //       {
-    //         path: "comps",
-    //         element: <PageComps />,
-    //       }
-    //     ]
-    //   : []),
+    {
+      path: 'edit-profile',
+      element: (
+        <RequireAuth>
+          <PageEditProfile />
+        </RequireAuth>
+      )
+    },
+    {
+      path: '404',
+      element: <Page404 />
+    },
     {
       path: '*',
-      element: <Page404 />
+      element: <Navigate to="/404" />
     }
   ]
+
+  if (IS_DEV_ENV) {
+    routers.push({
+      path: 'comps',
+      element: <PageComps />
+    })
+  }
 
   return useRoutes(routers)
 }

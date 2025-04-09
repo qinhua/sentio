@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any*/
 import {
   createContext,
   useContext,
@@ -8,26 +7,37 @@ import {
   useCallback,
   Dispatch
 } from 'react'
-// import { Space, SpinLoading, Toast } from 'antd-mobile'
+import { Space, SpinLoading } from 'antd-mobile'
 import { AuthTokenManager } from '@/request/authTokenManager'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { USER_AVATAR_URL } from '@/constants/common'
 import { getUserInfo, userLogin } from '@/apis/user'
 import { IUserProfile } from '@/types/module/user'
-import { useLocation, useNavigate } from 'react-router-dom'
-// import { PATH } from '@/constants/path'
-// import { debounce } from 'lodash-es'
+import { v4 as uuidv4 } from 'uuid'
 
 export interface IAccountInfo {
   token: string
-  chainId: number
-  address: string
 }
+
+export interface IUserProfileFormData {
+  nickname: string
+  gender: string
+  bio: string
+  avatar_index: number
+  avatar_url: string
+}
+
 interface IAuthProviderContext {
   loading: boolean
   isLogin: boolean
   account: IAccountInfo | null
   profile: IUserProfile | null
   login?: () => Promise<void>
+  registerUser?: (profileData: IUserProfileFormData) => Promise<void>
   getUserProfile?: (token?: string) => Promise<IUserProfile | void>
+  updateUserProfile?: (
+    profileData: Partial<IUserProfileFormData>
+  ) => Promise<void>
   setUserProfile?: Dispatch<React.SetStateAction<IUserProfile | null>>
   setAccount?: (data: IAccountInfo, fetchUser?: boolean) => void
   clearAccount?: () => void
@@ -35,11 +45,7 @@ interface IAuthProviderContext {
 
 const DefaultValue = {
   loading: true,
-  isInClient: false,
   isLogin: false,
-  isConnected: false,
-  isWhiteListPage: false,
-  turnstileToken: '',
   account: null,
   profile: null
 }
@@ -53,21 +59,36 @@ export const useAuthProviderContext = () => {
   return context
 }
 
+const USER_PROFILE_KEY = 'sentio:user-profile'
+
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const accountInfo = AuthTokenManager.accountInfo
   const [account, setAccount] = useState<IAccountInfo | null>(null)
   const [profile, setProfile] = useState<IUserProfile | null>(null)
   const [loading, setLoading] = useState(false)
-  const [isLogin, setIsLogin] = useState(!!accountInfo)
+  const [isLogin, setIsLogin] = useState(!!AuthTokenManager.token)
   const { pathname } = useLocation()
   const navigate = useNavigate()
+
+  // Load user profile from localStorage on initial render
+  useEffect(() => {
+    const loadUserProfile = () => {
+      try {
+        const storedProfile = localStorage.getItem(USER_PROFILE_KEY)
+        if (storedProfile) {
+          const parsedProfile = JSON.parse(storedProfile)
+          setProfile(parsedProfile)
+        }
+      } catch (error) {
+        console.error('Error loading user profile from localStorage:', error)
+      }
+    }
+
+    loadUserProfile()
+  }, [])
+
   // @ts-ignore
   const login = useCallback(async (invite_code?: string) => {
     // try {
-    //   if (!turnstileToken) {
-    //     setShowTurnstile(true)
-    //     return
-    //   }
     //   const res = await userLogin(
     //     isInClient
     //       ? {
@@ -85,9 +106,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     //     turnstileToken
     //   )
     //   await handleSetAccount({
-    //     token: res.token,
-    //     chainId: import.meta.env.VITE_KAIA_CHAIN_ID,
-    //     address: ''
+    //     token: res.token
     //   })
     //   const user = await getUserProfile()
     //   if (user?.user_id) {
@@ -132,87 +151,89 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     setProfile(null)
     AuthTokenManager.clearSession()
     setIsLogin(false)
+    localStorage.removeItem(USER_PROFILE_KEY)
   }
 
-  // useEffect(
-  //   debounce(() => {
-  //     if (isWhiteListPage) return
+  const registerUser = async (
+    profileData: IUserProfileFormData
+  ): Promise<void> => {
+    try {
+      setLoading(true)
+      const token = uuidv4()
 
-  //     const init = async () => {
-  //       setLoading(true)
-  //       await getUserProfile()
-  //       setAccount(accountInfo)
-  //       setIsLogin(true)
-  //       setTimeout(() => {
-  //         setLoading(false)
-  //       }, 500)
-  //     }
-  //     if (!accountInfo) return
+      // Create a new user profile object
+      const newProfile: IUserProfile = {
+        user_id: uuidv4(),
+        nickname: profileData.nickname,
+        gender: profileData.gender,
+        bio: profileData.bio,
+        avatar_index: profileData.avatar_index,
+        avatar_url: USER_AVATAR_URL[profileData.avatar_index],
+        token,
+        created_at: Date.now()
+      }
 
-  //     init()
-  //   }, 100),
-  //   [isWhiteListPage, accountInfo]
-  // )
+      // Save to state
+      setProfile(newProfile)
 
-  // useEffect(() => {
-  //   if (isWhiteListPage) return
+      // Save to localStorage
+      localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(newProfile))
 
-  //   const searchParams = new URLSearchParams(location.search)
-  //   const liffState = searchParams.get('liff.state')
-  //   const urlPage = liffState
-  //     ? new URLSearchParams(liffState).get('page')
-  //     : searchParams.get('page')
+      // Set login state
+      setIsLogin(true)
 
-  //   if (isInClient) {
-  //     const inviteCode = searchParams.get('referral') || ''
+      // Create a simple account info
+      const accountData: IAccountInfo = {
+        token
+      }
 
-  //     if (accountInfo?.token) {
-  //       if (inviteCode) {
-  //         console.log('登录时，有邀请码')
-  //         // 已登录 & 有邀请码，重新登录一次，记录邀请
-  //         login(inviteCode)
-  //       } else {
-  //         console.log('登录时，无邀请码')
-  //         // 已登录 & 无邀请码，只更新用户信息
-  //         // getUserProfile()
-  //       }
-  //     } else {
-  //       // 未登录时
-  //       console.log('未登录时')
-  //       login(inviteCode)
-  //     }
-  //   }
+      // Set account info
+      handleSetAccount(accountData, false)
+    } catch (error) {
+      console.error('Error registering user:', error)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
 
-  //   // 原页面重定向
-  //   if (urlPage) {
-  //     if (urlPage === 'tasks') {
-  //       navigate(PATH.tasks)
-  //     }
-  //   }
-  // }, [isWhiteListPage, accountInfo?.token, turnstileToken])
+  const updateUserProfile = async (
+    profileData: Partial<IUserProfileFormData>
+  ): Promise<void> => {
+    try {
+      setLoading(true)
 
-  // // 为了确保数据准备，每次进首页都获取一次用户信息
-  // useEffect(() => {
-  //   if (isLogin && !isFirstLoad && pathname.includes(PATH.home)) {
-  //     getUserProfile()
-  //   } else {
-  //     setIsFirstLoad(false) // 第一次加载后设置为 false
-  //   }
-  // }, [pathname, isLogin, isFirstLoad])
+      if (!profile) {
+        throw new Error('No user profile found')
+      }
 
-  // if (isInClient && !isWhiteListPage && (!accessToken || !idToken))
-  //   return (
-  //     <Space
-  //       align="center"
-  //       justify="center"
-  //       style={{
-  //         width: '100vw',
-  //         height: '100vh'
-  //       }}
-  //     >
-  //       <SpinLoading color="default" />
-  //     </Space>
-  //   )
+      // Create updated profile
+      const updatedProfile: IUserProfile = {
+        ...profile,
+        nickname: profileData.nickname || profile.nickname,
+        gender: profileData.gender || profile.gender,
+        bio: profileData.bio || profile.bio,
+        avatar_index: profileData.avatar_index || profile.avatar_index,
+        avatar_url:
+          profileData.avatar_index !== undefined
+            ? USER_AVATAR_URL[profileData.avatar_index]
+            : profile.avatar_url,
+        token: profile.token,
+        created_at: profile.created_at
+      }
+
+      // Update state
+      setProfile(updatedProfile)
+
+      // Update localStorage
+      localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(updatedProfile))
+    } catch (error) {
+      console.error('Error updating user profile:', error)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <AuthProviderContext.Provider
@@ -222,24 +243,29 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         account,
         profile,
         login,
+        registerUser,
         getUserProfile,
+        updateUserProfile,
         setUserProfile: setProfile,
         setAccount: handleSetAccount,
         clearAccount: handleClearAccount
       }}
     >
-      {children}
-      {/* <>
-        {isWhiteListPage || !isInClient || (isInClient && isLogin)
-          ? children
-          : null}
-        <DialogTurnstile
-          visible={showTurnstile}
-          onVerify={handleTurnstileVerify}
-          onError={handleTurnstileError}
-          onClose={() => setShowTurnstile(false)}
-        />
-      </> */}
+      {loading ? (
+        <Space
+          align="center"
+          justify="center"
+          style={{
+            width: '100%',
+            height: '100vh',
+            backgroundColor: 'var(--adm-color-background)'
+          }}
+        >
+          <SpinLoading color="default" />
+        </Space>
+      ) : (
+        children
+      )}
     </AuthProviderContext.Provider>
   )
 }

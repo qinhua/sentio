@@ -15,7 +15,7 @@
   // set 1rem = viewWidth / 10
   function setRemUnit() {
     // PC 端设置固定的字体大小，保证展示效果
-    var rem = docEl.clientWidth >= 1000 ? 40 : docEl.clientWidth / 10
+    var rem = docEl.clientWidth >= 500 ? 37.5 : docEl.clientWidth / 10
     docEl.style.fontSize = rem + 'px'
   }
 

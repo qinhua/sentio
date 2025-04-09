@@ -5,7 +5,8 @@ import { EnumTheme } from '@/enum/common'
 interface INavbarAtom {
   show: boolean
   title: string
-  right?: React.ReactNode
+  left?: string | React.ReactNode
+  right?: string | React.ReactNode
   onBack?: () => void
 }
 
@@ -13,7 +14,7 @@ export const themeAtom = atomWithStorage<EnumTheme>('theme', EnumTheme.LIGHT)
 
 export const navbarAtom = atom<INavbarAtom>({
   show: false,
-  title: 'Goodex',
+  title: 'Sentio',
   onBack: () => {
     history.back()
   }

@@ -1,0 +1,82 @@
+.iDialog {
+  :global {
+    .adm-center-popup-mask {
+      backdrop-filter: blur(4px);
+    }
+
+    .adm-center-popup-wrap {
+      width: 88vw !important;
+      max-width: 400px !important;
+    }
+
+    .adm-center-popup-body {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-width: auto;
+      @extend %safe-padding-bottom;
+      // background-color: $bgcolor_minor !important;
+      border-radius: 12px;
+
+      .i-dialog-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+
+        .btn-close {
+          position: relative;
+          z-index: 10;
+          top: 0;
+          @extend %flex-center;
+          // width: 42px !important;
+          // height: 42px !important;
+          padding: 0 !important;
+          font-size: 22px;
+
+          img {
+            width: 22px;
+          }
+        }
+      }
+
+      .title-wrapper {
+        display: flex;
+        align-items: center;
+
+        .dialog-title {
+          font-size: 22px;
+          font-weight: 500;
+          // color: #fff;
+        }
+      }
+
+      .i-dialog-content {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        font-size: 14px;
+        font-weight: 400;
+        // color: rgba(255, 255, 255);
+
+        &.no-padding {
+          padding: 0;
+        }
+      }
+
+      .i-dialog-footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 20px 0;
+
+        button {
+          min-width: 120px;
+          font-size: 14px;
+        }
+      }
+
+    }
+  }
+}

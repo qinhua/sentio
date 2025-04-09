@@ -4,6 +4,7 @@
 html {
   height: 100vh;
   background: #252525;
+  touch-action: manipulation;
 }
 
 body {
@@ -14,9 +15,23 @@ body {
   overflow: hidden;
   font-size: var(--adm-font-size-main) !important;
 
+  // @media screen and (min-width: 500px) {
+  //   width: 500px !important;
+  //   height: 800px !important;
+  //   background-image: url('/assets/iphone16pro.png');
+  //   background-size: auto 100%;
+  //   background-position: center;
+  //   background-repeat: no-repeat;
+
+  //   #root {
+  //     padding: 50px;
+  //   }
+  // }
+
   * {
     // font-family: $current_font-family !important;
     box-sizing: border-box;
+    margin: 0;
     font-display: swap;
     user-select: none;
   }
@@ -50,7 +65,7 @@ body {
 // 内容区 - Start
 .i-content {
   width: 100%;
-  // max-width: 500px;
+  max-width: 500px;
   margin: 0 auto;
   flex: 1;
   overflow: auto;

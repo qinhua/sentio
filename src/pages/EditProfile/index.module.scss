@@ -1,0 +1,142 @@
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #fff;
+}
+
+.profileContent {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.profileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 20px;
+
+  :global {
+    .adm-list-body {
+      border: none;
+    }
+
+    .adm-list-body-inner {
+      display: flex;
+      flex-direction: column;
+      border: none;
+    }
+
+    .adm-form-item-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333 !important;
+    }
+
+    .adm-list-item-content {
+      border: none;
+    }
+
+    .adm-list-item-title {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .adm-input {
+      height: 40px;
+    }
+
+    .adm-input,
+    .adm-text-area {
+      padding: 8px 16px;
+      --font-size: 14px;
+      background: #f5f5f5;
+      border-radius: 12px;
+    }
+
+    .adm-radio {
+      --font-size: 14px;
+      --icon-size: 18px;
+    }
+
+  }
+}
+
+.avatarSwiper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 74%;
+  margin: 0 auto;
+
+  :global {
+    .adm-swiper {
+      padding: 60px 0 40px;
+      overflow: visible;
+    }
+
+    .adm-swiper-slide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .adm-swiper-slide-active {
+      position: relative;
+      z-index: 2;
+    }
+
+    .adm-page-indicator-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 20px;
+    }
+
+    .iconify {
+      font-size: 30px;
+      color: #666
+    }
+  }
+
+  .avatarOption {
+    flex-shrink: 0;
+    cursor: pointer;
+    opacity: 0.6;
+    width: 100%;
+    max-width: 90px;
+    height: 90px;
+    overflow: hidden;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1.32);
+  }
+
+  .avatarOptionItem {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatarOptionSelected {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--adm-color-primary);
+  }
+}
+
+.profileFooter {
+  padding: 16px 20px;
+  border-top: 1px solid var(--adm-color-border);
+  background-color: #fff;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 10px 0;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
