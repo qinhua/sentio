@@ -10,7 +10,7 @@ import {
   PageDoctorList,
   PageChatList,
   PageChatDetail,
-  PageCourseList,
+  // PageCourseList,
   PageProfile,
   PageEditProfile,
   Page404,
@@ -67,14 +67,14 @@ export default function Router() {
         </RequireAuth>
       )
     },
-    {
-      path: 'course-list',
-      element: (
-        <RequireAuth>
-          <PageCourseList />
-        </RequireAuth>
-      )
-    },
+    // {
+    //   path: 'course-list',
+    //   element: (
+    //     <RequireAuth>
+    //       <PageCourseList />
+    //     </RequireAuth>
+    //   )
+    // },
     {
       path: 'profile',
       element: (

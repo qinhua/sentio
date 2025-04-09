@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { MessageItem, Doctor } from '../types'
+import { MessageItem, DoctorItem } from '../types'
 import dayjs from 'dayjs'
 import { chat } from '@/services/gpt'
 import { useAuthProviderContext } from '@/providers/AuthProvider'
@@ -8,7 +8,7 @@ type MessageRole = 'system' | 'user' | 'assistant'
 
 const STORAGE_KEY_PREFIX = 'chat_history_'
 
-export const useChat = (doctor: Doctor) => {
+export const useChat = (doctor: DoctorItem) => {
   const [messages, setMessages] = useState<MessageItem[]>([])
   const messagesRef = useRef<MessageItem[]>([])
   const [isTyping, setIsTyping] = useState(false)
@@ -24,7 +24,7 @@ export const useChat = (doctor: Doctor) => {
       const storageKey = `${STORAGE_KEY_PREFIX}${doctor.id}`
       localStorage.setItem(storageKey, JSON.stringify(newMessages))
     },
-    [doctor.id]
+    [doctor?.id]
   )
 
   const addMessage = useCallback(
@@ -42,7 +42,7 @@ export const useChat = (doctor: Doctor) => {
             messagesRef.current[messagesRef.current.length - 1].date
           ).isSame(now, 'day'),
         avatar:
-          sender === 'counselor' ? doctor.avatar : profile?.avatar_url || '',
+          sender === 'counselor' ? doctor?.avatar : profile?.avatar_url || '',
         isLoading
       }
 
@@ -57,7 +57,7 @@ export const useChat = (doctor: Doctor) => {
 
       return newMessage
     },
-    [saveMessages, doctor.avatar, profile?.avatar_url]
+    [saveMessages, doctor?.avatar, profile?.avatar_url]
   )
 
   // 更新消息内容
@@ -89,13 +89,7 @@ export const useChat = (doctor: Doctor) => {
         messages: [
           {
             role: 'system' as MessageRole,
-            content: `You are a professional counselor named ${
-              doctor.name
-            }. Your expertise is in ${doctor.expertise.join(
-              ', '
-            )}. Your counseling style is ${
-              doctor.style
-            }. Please introduce yourself to the user in a warm and professional manner, mentioning your expertise and how you can help them. Keep your introduction concise but informative.`
+            content: doctor.prompt
           },
           {
             role: 'user' as MessageRole,
@@ -116,7 +110,7 @@ export const useChat = (doctor: Doctor) => {
     } finally {
       setIsTyping(false)
     }
-  }, [addMessage, doctor.name, doctor.expertise, doctor.style])
+  }, [addMessage, doctor])
 
   // 从本地存储加载消息历史
   useEffect(() => {
@@ -189,13 +183,7 @@ export const useChat = (doctor: Doctor) => {
         const messagesToSend = [
           {
             role: 'system' as MessageRole,
-            content: `You are a professional counselor named ${
-              doctor.name
-            }. Your expertise is in ${doctor.expertise.join(
-              ', '
-            )}. Your counseling style is ${
-              doctor.style
-            }. Please provide counseling in a warm and professional manner, tailored to your expertise and style.`
+            content: doctor.prompt
           },
           ...messagesRef.current
             .filter(msg => !msg.isLoading) // 排除加载中的消息

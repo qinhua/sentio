@@ -1,8 +1,9 @@
 import React from 'react'
-import { Avatar, Tag } from 'antd-mobile'
+import { Avatar } from 'antd-mobile'
+import { useTextToSpeech } from '../../hooks/useTextToSpeech'
 import { MessageItem } from '../../types'
+import { Icon } from '@iconify/react'
 import classNames from 'classnames'
-import dayjs from 'dayjs'
 import styles from './index.module.scss'
 
 interface MessageCardProps {
@@ -17,7 +18,16 @@ const MessageCard: React.FC<MessageCardProps> = ({
   onClick
 }) => {
   const { isLoading, isFirstOfDay, avatar, sender, text, date, time } = data
-  console.log('MessageCard rendering:', { sender, text, avatar }) // 添加日志
+  const { speak, stopSpeaking, isSpeaking } = useTextToSpeech()
+
+  const handleSpeakClick = (e: React.MouseEvent) => {
+    e.stopPropagation() // 防止触发卡片的点击事件
+    if (isSpeaking) {
+      stopSpeaking()
+    } else {
+      speak(text)
+    }
+  }
 
   return (
     <div
@@ -55,7 +65,23 @@ const MessageCard: React.FC<MessageCardProps> = ({
                 <span className={styles.loadingDot}></span>
               </div>
             ) : (
-              text
+              <>
+                <div className={styles.messageText}>{text}</div>
+                {sender === 'counselor' && (
+                  <button
+                    className={classNames(styles.speakButton, {
+                      [styles.speaking]: isSpeaking
+                    })}
+                    onClick={handleSpeakClick}
+                    title={isSpeaking ? 'Pause' : 'Play'}
+                  >
+                    <Icon
+                      icon={isSpeaking ? 'mdi:pause' : 'mdi:play'}
+                      className={styles.speakIcon}
+                    />
+                  </button>
+                )}
+              </>
             )}
           </div>
           <div className={styles.time}>
@@ -72,4 +98,5 @@ const MessageCard: React.FC<MessageCardProps> = ({
   )
 }
 
-export default MessageCard
+// 使用 React.memo 包装组件，避免不必要的重新渲染
+export default React.memo(MessageCard)

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useCallback, useMemo } from 'react'
 import { Avatar, Input, Toast, Dialog } from 'antd-mobile'
 import MessageCard from './component/MessageCard'
 import { Icon } from '@iconify/react'
@@ -9,16 +9,21 @@ import { useChat } from './hooks/useChat'
 import { useGPT } from './hooks/useGPT'
 import { toast } from 'react-toastify'
 import classNames from 'classnames'
-import { Doctor } from './types'
+import { DoctorItem } from './types'
 import styles from './index.module.scss'
 
 const ChatDetail: React.FC = () => {
   const location = useLocation()
-  const doctor = location.state?.doctor as Doctor
+  const doctor = location.state?.doctor as DoctorItem
   const messageListRef = useRef<HTMLDivElement>(null)
   const [inputMessage, setInputMessage] = React.useState('')
   const navigate = useNavigate()
-  const { messages, sendMessage: addMessage } = useChat(doctor)
+  const {
+    messages,
+    sendMessage: addMessage,
+    isTyping,
+    isUserTyping
+  } = useChat(doctor)
   const {
     isRecording,
     recordingTime,
@@ -63,13 +68,7 @@ const ChatDetail: React.FC = () => {
       const lastMessage = messages[messages.length - 1]
       updateChat({
         chat_id: doctor.id,
-        id: doctor.id,
-        name: doctor.name,
-        avatar: doctor.avatar,
-        style: doctor.style,
-        color: doctor.color,
-        expertise: doctor.expertise,
-        description: doctor.description,
+        ...doctor,
         last_message: lastMessage.text,
         time: Date.now(),
         unread: lastMessage.sender === 'counselor' ? 1 : 0
@@ -77,15 +76,15 @@ const ChatDetail: React.FC = () => {
     }
   }, [messages, doctor, updateChat])
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     navigate(-1)
-  }
+  }, [navigate])
 
-  const handleFileClick = () => {
+  const handleFileClick = useCallback(() => {
     console.log('file')
-  }
+  }, [])
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
     if (inputMessage.trim() === '') return
 
     // 添加用户消息到界面
@@ -103,16 +102,19 @@ const ChatDetail: React.FC = () => {
       // 错误已经在 useGPT 中处理，这里不需要额外处理
       console.error('Error sending message:', err)
     }
-  }
+  }, [inputMessage, addMessage, sendGPTMessage])
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
-    }
-  }
+  const handleKeyPress = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        handleSendMessage()
+      }
+    },
+    [handleSendMessage]
+  )
 
-  const handleVoiceRecording = async () => {
+  const handleVoiceRecording = useCallback(async () => {
     if (isRecording) {
       stopRecording()
     } else {
@@ -125,7 +127,11 @@ const ChatDetail: React.FC = () => {
         })
       }
     }
-  }
+  }, [isRecording, startRecording, stopRecording])
+
+  const handleInputChange = useCallback((val: string) => {
+    setInputMessage(val)
+  }, [])
 
   // 当语音转文字完成时，自动发送消息
   useEffect(() => {
@@ -136,10 +142,16 @@ const ChatDetail: React.FC = () => {
     }
   }, [transcribedText, isProcessing])
 
+  // 滚动到底部
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight
     }
+  }, [messages])
+
+  // 使用 useMemo 缓存消息列表，避免不必要的重新渲染
+  const messageCards = useMemo(() => {
+    return messages.map(msg => <MessageCard key={msg.id} data={msg} />)
   }, [messages])
 
   if (!doctor) {
@@ -178,10 +190,8 @@ const ChatDetail: React.FC = () => {
 
       {/* 聊天内容区域 */}
       <div className={styles.messageList} ref={messageListRef}>
-        {messages.map(msg => (
-          <MessageCard key={msg.id} data={msg} />
-        ))}
-        {isLoading && (
+        {messageCards}
+        {(isLoading || isTyping) && (
           <div className={styles.loadingMessage}>
             <div className={styles.typingIndicator}>
               <span></span>
@@ -221,10 +231,10 @@ const ChatDetail: React.FC = () => {
         <Input
           className={styles.inputer}
           value={inputMessage}
-          onChange={val => setInputMessage(val)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyPress}
           placeholder="Type a message…"
-          disabled={isRecording || isProcessing || isLoading}
+          disabled={isRecording || isProcessing || isLoading || isUserTyping}
         />
         <button
           className={classNames(styles.actionButton, styles.sendButton)}
@@ -232,7 +242,8 @@ const ChatDetail: React.FC = () => {
             inputMessage.trim() === '' ||
             isRecording ||
             isProcessing ||
-            isLoading
+            isLoading ||
+            isUserTyping
           }
           onClick={handleSendMessage}
         >
@@ -243,4 +254,4 @@ const ChatDetail: React.FC = () => {
   )
 }
 
-export default ChatDetail
+export default React.memo(ChatDetail)

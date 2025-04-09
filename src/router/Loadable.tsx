@@ -1,4 +1,3 @@
- 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, ElementType, FC, ReactNode, Suspense } from 'react'
 
@@ -23,10 +22,18 @@ class ErrorBoundary extends Component {
   componentDidCatch(error: any, errorInfo: any) {
     // 发版后继续访问老版本文件出现错误时，自动刷新下页面
     const errString = error?.toString()
+    const isReadPropError = /TypeError: Cannot read properties of/g.test(
+      errString
+    )
     const isChunkLoadError = /Loading chunk \d+ failed/g.test(errString)
     const isDynamicImportError =
       /Failed to fetch dynamically imported module/g.test(errString)
     const isCSSError = /Unable to preload CSS/g.test(errString)
+
+    if (isReadPropError) {
+      localStorage.clear()
+    }
+
     if (isChunkLoadError || isDynamicImportError || isCSSError) {
       window.location.reload()
     } else {

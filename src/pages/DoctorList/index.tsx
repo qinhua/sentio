@@ -2,20 +2,11 @@ import React, { useState, useRef } from 'react'
 import { Button, Swiper, SwiperRef } from 'antd-mobile'
 import DoctorCard from './component/DoctorCard'
 import { DOCTOR_LIST } from '@/constants/common'
+import { DoctorItem } from '../ChatDetail/types'
 import { useNavigate } from 'react-router-dom'
 import { PATH } from '@/constants/path'
 import styles from './index.module.scss'
 import classNames from 'classnames'
-
-export interface DoctorItem {
-  id: number
-  name: string
-  avatar: string
-  color: string
-  style: string
-  expertise: string[]
-  description: string
-}
 
 const DoctorList: React.FC = () => {
   const refSwiper = useRef<SwiperRef | null>(null)

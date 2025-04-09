@@ -1,8 +1,7 @@
 import React, { useMemo, useState, useRef } from 'react'
 import { SearchBar, Empty, InputRef } from 'antd-mobile'
 import ChatCard from './component/ChatCard'
-import { DoctorItem } from '../DoctorList'
-import { DOCTOR_LIST } from 'src/constants/common'
+import { DoctorItem } from '../ChatDetail/types'
 import { useChatList } from './hooks/useChatList'
 import { useNavigate } from 'react-router-dom'
 import { PATH } from '@/constants/path'
@@ -19,7 +18,7 @@ const ChatList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const searchRef = useRef<InputRef | null>(null)
   const navigate = useNavigate()
-  const { chatList, searchChats } = useChatList()
+  const { searchChats } = useChatList()
 
   const filteredChats = useMemo(() => {
     return searchChats(searchQuery)
@@ -38,8 +37,11 @@ const ChatList: React.FC = () => {
           avatar: chat.avatar,
           style: chat.style,
           color: chat.color,
+          method: chat.method,
           expertise: chat.expertise,
-          description: chat.description
+          bio: chat.bio,
+          prompt_style: chat.prompt_style,
+          prompt: chat.prompt
         }
       }
     })

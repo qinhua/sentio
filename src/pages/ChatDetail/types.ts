@@ -9,12 +9,15 @@ export interface MessageItem {
   isLoading?: boolean
 }
 
-export interface Doctor {
+export interface DoctorItem {
   id: number
   name: string
   avatar: string
   style: string
   color: string
+  method: string
   expertise: string[]
-  description: string
+  bio: string
+  prompt_style: string[]
+  prompt: string
 }

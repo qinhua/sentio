@@ -25,8 +25,8 @@ export const chat = async (params: {
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: params.messages,
-      temperature: 0.7,
-      max_tokens: 1000
+      temperature: 1.2,
+      max_tokens: 500
     })
 
     return completion as unknown as ChatResponse

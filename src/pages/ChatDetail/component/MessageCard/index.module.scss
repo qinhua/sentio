@@ -24,12 +24,49 @@
     margin: 0 12px;
 
     .bubble {
+      position: relative;
       min-height: 40px;
       padding: 10px 14px;
       border-radius: 16px;
       font-size: 14px;
       line-height: 1.4;
       word-break: break-word;
+      position: relative;
+    }
+
+    .messageText {
+      white-space: pre-line;
+    }
+
+    .speakButton {
+      cursor: pointer;
+      position: absolute;
+      right: -8px;
+      top: -6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: #777;
+      border: none;
+      padding: 4px;
+      color: #09ee28;
+      transition: transform 0.2s;
+      border-radius: 50%;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+
+      &.speaking {
+        color: #fff;
+        opacity: 1;
+      }
+    }
+
+    .speakIcon {
+      font-size: 16px;
     }
 
     .counselorBubble {
@@ -42,6 +79,10 @@
       background-color: var(--adm-color-primary);
       color: #fff;
       border-top-right-radius: 4px;
+
+      .speakButton {
+        color: rgba(255, 255, 255, 0.8);
+      }
     }
 
     .loadingBubble {
