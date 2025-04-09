@@ -165,7 +165,7 @@ export const useChat = (doctor: DoctorItem) => {
         const userMessage = addMessage(content, 'user', true)
         userMessageId = userMessage.id
 
-        // 更新用户消息，移除加载状态
+        // 立即更新用户消息，移除加载状态
         updateMessage(userMessageId, content, false)
         setIsUserTyping(false)
 
@@ -176,14 +176,14 @@ export const useChat = (doctor: DoctorItem) => {
         const gptLoadingMessage = addMessage('正在思考...', 'counselor', true)
         gptLoadingMessageId = gptLoadingMessage.id
 
-        // 准备发送给 GPT 的消息
+        // 准备发送给 GPT 的消息，确保消息顺序正确
         const messagesToSend = [
           {
             role: 'system' as MessageRole,
             content: doctor.prompt
           },
           ...messagesRef.current
-            .filter(msg => !msg.isLoading) // 排除加载中的消息
+            .filter(msg => !msg.isLoading && msg.id !== userMessageId) // 排除加载中的消息和当前用户消息
             .map(msg => ({
               role: (msg.sender === 'user'
                 ? 'user'
@@ -192,7 +192,7 @@ export const useChat = (doctor: DoctorItem) => {
             })),
           {
             role: 'user' as MessageRole,
-            content: userMessage.text
+            content: content // 使用原始内容而不是从消息中获取
           }
         ]
 
