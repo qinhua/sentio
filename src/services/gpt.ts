@@ -24,7 +24,10 @@ export const chat = async (params: {
   try {
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
-      messages: params.messages,
+      messages: [
+        { role: 'system', content: '请始终使用中文回复。' },
+        ...params.messages
+      ],
       temperature: 1.2,
       max_tokens: 500
     })

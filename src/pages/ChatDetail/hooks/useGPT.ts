@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import OpenAI from 'openai'
 
 interface GPTMessage {
-  role: 'user' | 'assistant'
+  role: 'user' | 'assistant' | 'system'
   content: string
 }
 
@@ -32,7 +32,10 @@ export const useGPT = () => {
 
         // 调用 OpenAI API
         const completion = await openai.chat.completions.create({
-          messages: updatedHistory,
+          messages: [
+            { role: 'system', content: '请始终使用中文回复。' },
+            ...updatedHistory
+          ],
           model: 'gpt-4o',
           temperature: 1.2,
           max_tokens: 500
