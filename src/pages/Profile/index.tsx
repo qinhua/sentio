@@ -40,7 +40,10 @@ const Profile: React.FC = () => {
             />
           </div>
           <p className={styles.name}>{profile.nickname}</p>
-          <p className={styles.bio}>{profile.bio}</p>
+          {Number(profile.age) > 0 && (
+            <p className={styles.age}>{profile.age} Years Old</p>
+          )}
+          {/* <p className={styles.bio}>{profile.bio}</p> */}
         </div>
 
         <div className={styles.buttonGroup}>

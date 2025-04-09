@@ -23,6 +23,7 @@ const EditProfile: React.FC = () => {
   const [nickname, setNickname] = useState('')
   const [gender, setGender] = useState('')
   const [bio, setBio] = useState('')
+  const [age, setAge] = useState('')
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(2)
   const navigate = useNavigate()
 
@@ -37,6 +38,9 @@ const EditProfile: React.FC = () => {
       case 'gender':
         setGender(value)
         break
+      case 'age':
+        setAge(value)
+        break
       case 'bio':
         setBio(value)
         break
@@ -49,7 +53,7 @@ const EditProfile: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-    if (!nickname || !gender) return
+    if (!nickname || !gender || !age) return
 
     try {
       await updateUserProfile?.({
@@ -57,7 +61,8 @@ const EditProfile: React.FC = () => {
         avatar_url: USER_AVATAR_URL[selectedAvatarIndex],
         nickname,
         gender,
-        bio
+        age
+        // bio,
       })
 
       toast.success('Profile updated successfully')
@@ -74,7 +79,8 @@ const EditProfile: React.FC = () => {
 
     setNickname(profile.nickname)
     setGender(profile.gender)
-    setBio(profile.bio || '')
+    setAge(profile.age || '')
+    // setBio(profile.bio || '')
     setSelectedAvatarIndex(profile?.avatar_index)
   }, [profile])
 
@@ -134,7 +140,17 @@ const EditProfile: React.FC = () => {
               </Space>
             </Radio.Group>
           </Form.Item>
-          <Form.Item label="Bio">
+          <Form.Item label="Age">
+            <Input
+              value={age}
+              clearable
+              min={1}
+              max={100}
+              placeholder="Please enter age"
+              onChange={value => handleFormChange('age', value)}
+            />
+          </Form.Item>
+          {/* <Form.Item label="Bio">
             <TextArea
               value={bio}
               maxLength={100}
@@ -142,7 +158,7 @@ const EditProfile: React.FC = () => {
               placeholder="Please enter bio (optional)"
               onChange={value => handleFormChange('bio', value)}
             />
-          </Form.Item>
+          </Form.Item> */}
         </Form>
       </div>
 
@@ -150,7 +166,7 @@ const EditProfile: React.FC = () => {
         <Button
           className={styles.submitButton}
           color="primary"
-          disabled={!nickname}
+          disabled={!nickname || !gender || Number(age) <= 0}
           onClick={handleSubmit}
         >
           Save

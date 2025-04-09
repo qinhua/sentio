@@ -15,7 +15,7 @@ const RootRedirect: React.FC = () => {
   useEffect(() => {
     if (isLogin) {
       // If user is logged in, redirect to course list
-      navigate(PATH.courseList)
+      navigate(PATH.doctorList)
     } else {
       // If user is not logged in, redirect to welcome page
       navigate(PATH.welcome)

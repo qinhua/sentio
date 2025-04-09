@@ -22,6 +22,7 @@ const CompleteInfo: React.FC = () => {
   const [nickname, setNickname] = useState('')
   const [gender, setGender] = useState('male')
   const [bio, setBio] = useState('')
+  const [age, setAge] = useState('')
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(2)
   const navigate = useNavigate()
 
@@ -36,6 +37,9 @@ const CompleteInfo: React.FC = () => {
       case 'gender':
         setGender(value)
         break
+      case 'age':
+        setAge(value)
+        break
       case 'bio':
         setBio(value)
         break
@@ -48,7 +52,7 @@ const CompleteInfo: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-    if (!nickname || !gender) return
+    if (!nickname || !gender || !age) return
 
     try {
       await registerUser?.({
@@ -56,7 +60,8 @@ const CompleteInfo: React.FC = () => {
         avatar_url: USER_AVATAR_URL[selectedAvatarIndex],
         nickname,
         gender,
-        bio
+        age
+        // bio
       })
 
       navigate(PATH.doctorList)
@@ -121,7 +126,17 @@ const CompleteInfo: React.FC = () => {
               </Space>
             </Radio.Group>
           </Form.Item>
-          <Form.Item label="Bio">
+          <Form.Item label="Age">
+            <Input
+              value={age}
+              clearable
+              min={1}
+              max={100}
+              placeholder="Please enter age"
+              onChange={value => handleFormChange('age', value)}
+            />
+          </Form.Item>
+          {/* <Form.Item label="Bio">
             <TextArea
               value={bio}
               maxLength={100}
@@ -129,7 +144,7 @@ const CompleteInfo: React.FC = () => {
               placeholder="Please enter bio (optional)"
               onChange={value => handleFormChange('bio', value)}
             />
-          </Form.Item>
+          </Form.Item> */}
         </Form>
       </div>
 
@@ -137,7 +152,7 @@ const CompleteInfo: React.FC = () => {
         <Button
           className={styles.submitButton}
           color="primary"
-          disabled={!nickname || !gender}
+          disabled={!nickname || !gender || Number(age) <= 0}
           onClick={handleSubmit}
         >
           Done

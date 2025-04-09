@@ -22,7 +22,8 @@ export interface IAccountInfo {
 export interface IUserProfileFormData {
   nickname: string
   gender: string
-  bio: string
+  // bio: string
+  age: string
   avatar_index: number
   avatar_url: string
 }
@@ -166,7 +167,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         user_id: uuidv4(),
         nickname: profileData.nickname,
         gender: profileData.gender,
-        bio: profileData.bio,
+        age: profileData.age,
+        // bio: profileData.bio,
         avatar_index: profileData.avatar_index,
         avatar_url: USER_AVATAR_URL[profileData.avatar_index],
         token,
@@ -212,7 +214,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         ...profile,
         nickname: profileData.nickname || profile.nickname,
         gender: profileData.gender || profile.gender,
-        bio: profileData.bio || profile.bio,
+        age: profileData.age || profile.age,
+        // bio: profileData.bio || profile.bio,
         avatar_index: profileData.avatar_index || profile.avatar_index,
         avatar_url:
           profileData.avatar_index !== undefined
