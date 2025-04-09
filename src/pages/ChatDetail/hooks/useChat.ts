@@ -31,7 +31,7 @@ export const useChat = (doctor: DoctorItem) => {
     (content: string, sender: 'user' | 'counselor', isLoading = false) => {
       const now = dayjs()
       const newMessage: MessageItem = {
-        id: Date.now(),
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         sender,
         text: content,
         time: now.format('HH:mm'),
@@ -62,7 +62,7 @@ export const useChat = (doctor: DoctorItem) => {
 
   // 更新消息内容
   const updateMessage = useCallback(
-    (messageId: number, content: string, isLoading = false) => {
+    (messageId: string, content: string, isLoading = false) => {
       setMessages(prevMessages => {
         const newMessages = prevMessages.map(msg =>
           msg.id === messageId ? { ...msg, text: content, isLoading } : msg
@@ -154,8 +154,8 @@ export const useChat = (doctor: DoctorItem) => {
         return
       }
 
-      let hasError = false
-      let userMessageId: number | null = null
+      let userMessageId: string | null = null
+      let gptLoadingMessageId: string | null = null
 
       try {
         isProcessingRef.current = true
@@ -164,9 +164,6 @@ export const useChat = (doctor: DoctorItem) => {
         // 添加用户消息（带加载状态）
         const userMessage = addMessage(content, 'user', true)
         userMessageId = userMessage.id
-
-        // 模拟用户消息发送延迟
-        await new Promise(resolve => setTimeout(resolve, 500))
 
         // 更新用户消息，移除加载状态
         updateMessage(userMessageId, content, false)
@@ -177,7 +174,7 @@ export const useChat = (doctor: DoctorItem) => {
 
         // 添加GPT正在输入的消息
         const gptLoadingMessage = addMessage('正在思考...', 'counselor', true)
-        const gptLoadingMessageId = gptLoadingMessage.id
+        gptLoadingMessageId = gptLoadingMessage.id
 
         // 准备发送给 GPT 的消息
         const messagesToSend = [
@@ -210,22 +207,36 @@ export const useChat = (doctor: DoctorItem) => {
 
         // 更新 GPT 回应
         const gptResponse = response.choices[0].message.content
-        updateMessage(gptLoadingMessageId, gptResponse, false)
+        if (gptLoadingMessageId) {
+          updateMessage(gptLoadingMessageId, gptResponse, false)
+        }
       } catch (error) {
         console.error('Error sending message:', error)
-        hasError = true
 
-        // 如果有加载中的GPT消息，更新为错误消息
-        const loadingMessage = messagesRef.current.find(
-          msg => msg.isLoading && msg.sender === 'counselor'
-        )
-        if (loadingMessage) {
-          updateMessage(
-            loadingMessage.id,
-            '抱歉，我遇到了一些问题。请稍后再试。',
-            false
-          )
-        }
+        // 清理所有加载中的消息
+        setMessages(prevMessages => {
+          const newMessages = prevMessages.map(msg => {
+            if (msg.isLoading) {
+              if (msg.sender === 'user') {
+                return {
+                  ...msg,
+                  text: '消息发送失败，请重试',
+                  isLoading: false
+                }
+              } else {
+                return {
+                  ...msg,
+                  text: '抱歉，我遇到了一些问题。请稍后再试。',
+                  isLoading: false
+                }
+              }
+            }
+            return msg
+          })
+          messagesRef.current = newMessages
+          saveMessages(newMessages)
+          return newMessages
+        })
       } finally {
         // 隐藏正在输入状态
         setIsTyping(false)
@@ -233,14 +244,7 @@ export const useChat = (doctor: DoctorItem) => {
         setIsUserTyping(false)
       }
     },
-    [
-      addMessage,
-      updateMessage,
-      doctor.id,
-      doctor.name,
-      doctor.expertise,
-      doctor.style
-    ]
+    [addMessage, updateMessage, doctor.prompt, saveMessages]
   )
 
   const clearMessages = useCallback(() => {

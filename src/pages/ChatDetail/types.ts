@@ -1,5 +1,5 @@
 export interface MessageItem {
-  id: number
+  id: string
   sender: 'counselor' | 'user'
   text: string
   time: string

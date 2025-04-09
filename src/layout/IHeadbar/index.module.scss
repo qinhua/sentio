@@ -8,6 +8,7 @@
   padding: 0 20px;
   background: var(--adm-color-background);
 
+
   .logo {
     display: flex;
     justify-content: space-between;
@@ -33,4 +34,8 @@
     color: #555;
   }
 
+}
+
+.noBg {
+  background: #f5f5f5;
 }

@@ -17,8 +17,27 @@ const IHeadbar = ({ title }: { title?: string | ReactNode }) => {
 
   if (!shouldShowHeader) return null
 
+  const getBgColor = () => {
+    if (pathname === PATH.profile) {
+      return {
+        background: '#e9c2fe'
+      }
+    }
+
+    if (pathname === PATH.doctorList) {
+      return {
+        background: '#f5f5f5'
+      }
+    }
+
+    return { background: '#fff' }
+  }
+
   return (
-    <div className={classNames('i-headbar', styles.iHeadbar)}>
+    <div
+      className={classNames('i-headbar', styles.iHeadbar)}
+      style={getBgColor()}
+    >
       <div className={styles.logo}>
         <img src={ImgLogo} alt="logo" />
         <p>Sentio</p>

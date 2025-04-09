@@ -191,7 +191,7 @@ const ChatDetail: React.FC = () => {
       {/* 聊天内容区域 */}
       <div className={styles.messageList} ref={messageListRef}>
         {messageCards}
-        {(isLoading || isTyping) && (
+        {messages.length === 0 && isTyping && (
           <div className={styles.loadingMessage}>
             <div className={styles.typingIndicator}>
               <span></span>
