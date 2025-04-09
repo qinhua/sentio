@@ -1,5 +1,5 @@
 import React from 'react'
-import { Avatar, Tag } from 'antd-mobile'
+import { Avatar, Tag, Divider } from 'antd-mobile'
 import { DoctorItem } from '../../../ChatDetail/types'
 import { alphaColor } from '@/utils/common'
 import classNames from 'classnames'
@@ -12,7 +12,7 @@ interface DoctorCardProps {
 }
 
 const DoctorCard: React.FC<DoctorCardProps> = ({ active, data, className }) => {
-  const { avatar, name, style, expertise, bio } = data
+  const { avatar, name, style, method, expertise, bio } = data
 
   return (
     <div
@@ -33,6 +33,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ active, data, className }) => {
         <Avatar className={styles.avatar} src={avatar} alt="doctor avatar" />
         <h2 className={styles.name}>{name}</h2>
         <p className={styles.style}>{style}</p>
+        <Divider className={styles.method}>{method}</Divider>
       </div>
       <div className={styles.expertise}>
         {expertise.map((itm, idx) => (
