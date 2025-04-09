@@ -213,7 +213,7 @@ export const useChat = (doctor: DoctorItem) => {
       } catch (error) {
         console.error('Error sending message:', error)
 
-        // 清理所有加载中的消息
+        // 更新错误状态的消息
         setMessages(prevMessages => {
           const newMessages = prevMessages.map(msg => {
             if (msg.isLoading) {

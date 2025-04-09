@@ -37,7 +37,7 @@ export const useGPT = () => {
             ...updatedHistory
           ],
           model: 'gpt-4o',
-          temperature: 1.2,
+          temperature: 1,
           max_tokens: 500
         })
 
@@ -57,6 +57,8 @@ export const useGPT = () => {
           err instanceof Error ? err.message : '发生错误，请重试'
         setError(errorMessage)
         console.error('GPT API Error:', err)
+        // 发生错误时，回滚最后一条用户消息
+        setConversationHistory(prev => prev.slice(0, -1))
         return null
       } finally {
         setIsLoading(false)

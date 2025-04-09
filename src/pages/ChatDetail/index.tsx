@@ -87,20 +87,22 @@ const ChatDetail: React.FC = () => {
   const handleSendMessage = useCallback(async () => {
     if (inputMessage.trim() === '') return
 
-    // 添加用户消息到界面
-    addMessage(inputMessage)
+    const messageToSend = inputMessage.trim()
     setInputMessage('')
 
     try {
+      // 添加用户消息到界面
+      addMessage(messageToSend)
+
       // 获取 GPT 回复
-      const response = await sendGPTMessage(inputMessage)
+      const response = await sendGPTMessage(messageToSend)
       if (response) {
         // 添加 GPT 回复到界面
         addMessage(response)
       }
     } catch (err) {
-      // 错误已经在 useGPT 中处理，这里不需要额外处理
       console.error('Error sending message:', err)
+      // 错误已经在 useGPT 中处理，这里不需要额外处理
     }
   }, [inputMessage, addMessage, sendGPTMessage])
 
@@ -122,7 +124,7 @@ const ChatDetail: React.FC = () => {
         await startRecording()
       } catch (err) {
         Toast.show({
-          content: '无法启动语音识别，请检查麦克风权限',
+          content: 'Can not start recording, please check your microphone',
           position: 'center'
         })
       }

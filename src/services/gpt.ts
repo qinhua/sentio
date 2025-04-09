@@ -28,7 +28,7 @@ export const chat = async (params: {
         { role: 'system', content: '请始终使用中文回复。' },
         ...params.messages
       ],
-      temperature: 1.2,
+      temperature: 1,
       max_tokens: 500
     })
 
