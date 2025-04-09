@@ -5,6 +5,8 @@ export interface MessageItem {
   time: string
   date: string
   isFirstOfDay: boolean
+  avatar: string
+  isLoading?: boolean
 }
 
 export interface Doctor {

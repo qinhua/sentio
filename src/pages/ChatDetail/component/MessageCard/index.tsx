@@ -16,7 +16,8 @@ const MessageCard: React.FC<MessageCardProps> = ({
   className,
   onClick
 }) => {
-  const { isFirstOfDay, sender, text, date, time } = data
+  const { isLoading, isFirstOfDay, avatar, sender, text, date, time } = data
+  console.log('MessageCard rendering:', { sender, text, avatar }) // 添加日志
 
   return (
     <div
@@ -29,31 +30,33 @@ const MessageCard: React.FC<MessageCardProps> = ({
         </div>
       )}
       <div
-        className={`${styles.messageCardWrapper} ${
-          sender === 'user' ? styles.userMessage : ''
-        }`}
+        className={classNames(styles.messageCardWrapper, {
+          [styles.userMessage]: sender === 'user'
+        })}
       >
         {sender === 'counselor' && (
-          <Avatar
-            className={styles.avatar}
-            src="https://readdy.ai/api/search-image?query=Professional male Chinese psychologist portrait, mid 30s, warm smile, glasses, soft lighting, high quality portrait, isolated on light background, centered composition, realistic style&width=80&height=80&seq=11&orientation=squarish"
-            alt="avatar"
-          />
+          <Avatar className={styles.avatar} src={avatar} alt="avatar" />
         )}
         {sender === 'user' && (
-          <Avatar
-            className={styles.avatar}
-            src="https://public.readdy.ai/ai/img_res/56d87db85d3adf95ccda80beb0055e59.jpg"
-            alt="user avatar"
-          />
+          <Avatar className={styles.avatar} src={avatar} alt="user avatar" />
         )}
         <div className={styles.messageContent}>
           <div
-            className={`${styles.bubble} ${
-              sender === 'user' ? styles.userBubble : styles.counselorBubble
-            }`}
+            className={classNames(styles.bubble, {
+              [styles.userBubble]: sender === 'user',
+              [styles.counselorBubble]: sender === 'counselor',
+              [styles.loadingBubble]: isLoading
+            })}
           >
-            {text}
+            {isLoading ? (
+              <div className={styles.loadingIndicator}>
+                <span className={styles.loadingDot}></span>
+                <span className={styles.loadingDot}></span>
+                <span className={styles.loadingDot}></span>
+              </div>
+            ) : (
+              text
+            )}
           </div>
           <div className={styles.time}>
             {time}
