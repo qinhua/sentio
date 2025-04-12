@@ -24,10 +24,6 @@ export default function Router() {
       element: <RootRedirect />
     },
     {
-      path: 'login',
-      element: <PageLogin />
-    },
-    {
       path: 'welcome',
       element: (
         <AuthGuard>

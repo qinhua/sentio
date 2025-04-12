@@ -3,6 +3,7 @@ import { useAuthProviderContext } from '@/providers/AuthProvider'
 import { MessageItem, DoctorItem } from '../types'
 import { chat } from '@/services/gpt'
 import dayjs from 'dayjs'
+import { EnumUserGender } from 'src/enum/common'
 
 type MessageRole = 'system' | 'user' | 'assistant'
 
@@ -88,14 +89,18 @@ export const useChat = (doctor: DoctorItem) => {
       return {
         id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         sender,
+        avatar:
+          sender === 'counselor' ? doctor?.avatar : profile?.avatar_url || '',
+        gender:
+          sender === 'counselor'
+            ? doctor.gender
+            : profile?.gender || EnumUserGender.OTHER,
         text: content,
         time: now.format('HH:mm'),
         date: now.format('YYYY/MM/DD'),
         isFirstOfDay:
           prevMessages.length === 0 ||
           !dayjs(prevMessages[prevMessages.length - 1].date).isSame(now, 'day'),
-        avatar:
-          sender === 'counselor' ? doctor?.avatar : profile?.avatar_url || '',
         isLoading
       }
     },

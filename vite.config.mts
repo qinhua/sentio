@@ -3,7 +3,6 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { ViteEjsPlugin } from 'vite-plugin-ejs'
 import postCssPxToRem from 'postcss-pxtorem'
 import vitePluginImp from 'vite-plugin-imp'
-// import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 // @ts-ignore
@@ -63,7 +62,6 @@ export default ({ mode, command, isSsrBuild }: ConfigEnv) => {
       }),
       nodePolyfills(),
       react(),
-      // tailwindcss(),
       vitePluginImp({
         libList: [
           {

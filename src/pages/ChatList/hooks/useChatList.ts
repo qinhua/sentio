@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { EnumUserGender } from '@/enum/common'
 import { ChatItem } from '../types'
 import dayjs from 'dayjs'
 
@@ -75,9 +76,10 @@ export const useChatList = () => {
             chat_id: chat.chat_id,
             id: chat.id || chat.chat_id,
             name: chat.name || 'Unknown',
+            gender: chat.gender || EnumUserGender.OTHER,
             avatar: chat.avatar || '',
             style: chat.style || '',
-            color: chat.color || '#cccccc',
+            color: chat.color || '#ccc',
             method: chat.method || '',
             expertise: chat.expertise || [],
             bio: chat.bio || '',

@@ -1,7 +1,6 @@
 export const PATH = {
   root: '/',
   comps: '/comps',
-  login: '/login',
   welcome: '/welcome',
   completeInfo: '/complete-info',
   doctorList: '/doctor-list',

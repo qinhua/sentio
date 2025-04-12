@@ -17,6 +17,7 @@ export const DOCTOR_LIST: DoctorItem[] = [
   {
     id: 1,
     name: '林澜',
+    gender: 'female',
     avatar: Doctor1,
     color: '#e9c2fe',
     style: '温柔倾听型',
@@ -30,6 +31,7 @@ export const DOCTOR_LIST: DoctorItem[] = [
   {
     id: 2,
     name: '江行',
+    gender: 'female',
     avatar: Doctor2,
     color: ' #95d8fb',
     style: '理性分析型',
@@ -43,6 +45,7 @@ export const DOCTOR_LIST: DoctorItem[] = [
   {
     id: 3,
     name: '洛尘',
+    gender: 'male',
     avatar: Doctor3,
     color: '#badd85',
     style: '灵性启发型',
@@ -56,6 +59,7 @@ export const DOCTOR_LIST: DoctorItem[] = [
   {
     id: 4,
     name: '苏桐',
+    gender: 'male',
     avatar: Doctor4,
     color: '#ff7676',
     style: '温和教练型',
@@ -69,6 +73,7 @@ export const DOCTOR_LIST: DoctorItem[] = [
   {
     id: 5,
     name: '黎晗',
+    gender: 'female',
     avatar: Doctor5,
     color: '#3d3d3d',
     style: '洞察深刻型',

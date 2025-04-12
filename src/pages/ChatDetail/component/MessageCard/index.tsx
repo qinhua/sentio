@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Avatar } from 'antd-mobile'
 import { useTextToSpeech } from '../../hooks/useTextToSpeech'
+import { EnumUserGender } from '@/enum/common'
 import { MessageItem } from '../../types'
 import { Icon } from '@iconify/react'
 import classNames from 'classnames'
@@ -19,7 +20,8 @@ const MessageCard: React.FC<MessageCardProps> = ({
   onClick,
   onRetry
 }) => {
-  const { isLoading, isFirstOfDay, avatar, sender, text, date, time } = data
+  const { isLoading, isFirstOfDay, avatar, gender, sender, text, date, time } =
+    data
   const { speak, stopSpeaking, isSpeaking } = useTextToSpeech()
   const isError =
     text.includes('Sorry, something went wrong') ||
@@ -45,7 +47,7 @@ const MessageCard: React.FC<MessageCardProps> = ({
     if (isSpeaking) {
       stopSpeaking()
     } else {
-      speak(text)
+      speak(text, gender)
     }
   }
 

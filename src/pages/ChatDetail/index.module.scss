@@ -68,10 +68,9 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 56px 16px 80px;
+  padding: 56px 16px 100px;
   overflow-y: auto;
 }
-
 
 .loadingMessage {
   display: flex;
@@ -119,16 +118,65 @@
   }
 }
 
-.inputArea {
+.bottomArea {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 5px;
   max-width: 500px;
   margin: 0 auto;
+}
+
+.attachmentsList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 2px;
+  padding: 8px;
+  border-top: 1px solid #e0e0e0;
+  background-color: #fff;
+}
+
+.attachmentItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 4px 0px 4px 8px;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.attachmentItem span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachmentItem button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 16px;
+}
+
+.attachmentItem button:hover {
+  color: #666;
+}
+
+.inputArea {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
   padding: 12px 14px;
   background-color: #fff;
   border-top: 1px solid #eee;
@@ -148,6 +196,11 @@
     border-radius: 50%;
     transition: background-color 0.3s;
 
+    &[disabled] {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
     &:hover {
       background-color: #e5e5e5;
     }
@@ -160,6 +213,13 @@
   // .micButton {
 
   // }
+
+  .fileInput {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
 
   .micButton {
 

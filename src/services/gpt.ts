@@ -5,9 +5,20 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true
 })
 
+type MessageContent =
+  | string
+  | Array<{
+      type: 'text' | 'image_url'
+      text?: string
+      image_url?: {
+        url: string
+        detail?: 'low' | 'high'
+      }
+    }>
+
 interface Message {
   role: 'system' | 'user' | 'assistant'
-  content: string
+  content: MessageContent
 }
 
 interface ChatResponse {
@@ -45,7 +56,10 @@ const ensureChineseInstruction = (messages: Message[]): Message[] => {
 
   // 检查是否已经包含中文系统提示
   const hasChineseInstruction = messages.some(
-    msg => msg.role === 'system' && msg.content.includes('中文回复')
+    msg =>
+      msg.role === 'system' &&
+      typeof msg.content === 'string' &&
+      msg.content.includes('中文回复')
   )
 
   if (!hasChineseInstruction) {
@@ -56,16 +70,69 @@ const ensureChineseInstruction = (messages: Message[]): Message[] => {
   return messages
 }
 
+// 将图片转换为 base64
+const imageToBase64 = async (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result)
+      } else {
+        reject(new Error('Failed to convert image to base64'))
+      }
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
 export const chat = async (params: {
   messages: Message[]
   onStreamUpdate?: (content: string) => void
+  attachments?: File[]
 }): Promise<ChatResponse> => {
   const maxRetries = 2
   const timeoutMs = 30000 // 30秒超时
   let retries = 0
 
+  // 处理附件
+  let messagesWithAttachments = [...params.messages]
+  if (params.attachments && params.attachments.length > 0) {
+    const lastMessage =
+      messagesWithAttachments[messagesWithAttachments.length - 1]
+    if (lastMessage.role === 'user') {
+      const attachmentContents = await Promise.all(
+        params.attachments.map(async file => {
+          const base64 = await imageToBase64(file)
+          return {
+            type: 'image_url' as const,
+            image_url: {
+              url: base64,
+              detail: 'low' as const
+            }
+          }
+        })
+      )
+
+      // 如果最后一条消息是纯文本，将其转换为数组格式
+      if (typeof lastMessage.content === 'string') {
+        lastMessage.content = [
+          {
+            type: 'text' as const,
+            text: lastMessage.content
+          },
+          ...attachmentContents
+        ]
+      } else {
+        lastMessage.content = [...lastMessage.content, ...attachmentContents]
+      }
+    }
+  }
+
   // 添加中文系统提示
-  const messagesWithInstruction = ensureChineseInstruction(params.messages)
+  const messagesWithInstruction = ensureChineseInstruction(
+    messagesWithAttachments
+  )
 
   while (retries <= maxRetries) {
     try {
@@ -74,7 +141,7 @@ export const chat = async (params: {
         const stream = await withTimeout(
           openai.chat.completions.create({
             ...MODEL_CONFIG,
-            messages: messagesWithInstruction,
+            messages: messagesWithInstruction as any, // 由于 OpenAI 类型定义的限制，这里需要类型断言
             stream: true
           }),
           timeoutMs
@@ -90,7 +157,9 @@ export const chat = async (params: {
             hasReceivedContent = true
             fullResponse += content
             // 调用回调函数更新UI
-            params.onStreamUpdate(fullResponse)
+            if (params.onStreamUpdate) {
+              params.onStreamUpdate(fullResponse)
+            }
           }
         }
 
@@ -119,7 +188,7 @@ export const chat = async (params: {
         const completion = await withTimeout(
           openai.chat.completions.create({
             ...MODEL_CONFIG,
-            messages: messagesWithInstruction
+            messages: messagesWithInstruction as any // 由于 OpenAI 类型定义的限制，这里需要类型断言
           }),
           timeoutMs
         )
@@ -145,4 +214,23 @@ export const chat = async (params: {
 
   // 这行代码应该永远不会执行，但TypeScript需要它
   throw new Error('Unexpected error in chat function')
+}
+
+export const sendGPTMessage = async (
+  message: string,
+  attachments: File[] = []
+) => {
+  try {
+    const response = await chat({
+      messages: [{ role: 'user', content: message }],
+      attachments,
+      onStreamUpdate: (_content: string) => {
+        // Handle stream updates if necessary
+      }
+    })
+    return response
+  } catch (error) {
+    console.error('Error sending GPT message:', error)
+    throw error
+  }
 }

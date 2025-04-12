@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useCallback, useMemo, useState } from 'react'
 import { Avatar, Input, Toast, Dialog } from 'antd-mobile'
 import MessageCard from './component/MessageCard'
 import { Icon } from '@iconify/react'
-import { useNavigate, useLocation, useParams } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useChatList } from '../ChatList/hooks/useChatList'
 import { useVoice } from './hooks/useVoice'
 import { useChat } from './hooks/useChat'
@@ -20,6 +20,8 @@ const ChatDetail: React.FC = () => {
   const { isLoaded, updateChat, getChatById } = useChatList()
   const [isInitialized, setIsInitialized] = useState(false)
   const navigate = useNavigate()
+  const [attachments, setAttachments] = useState<File[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // 如果没有通过路由参数传递doctor，尝试从chatList获取
   useEffect(() => {
@@ -32,6 +34,7 @@ const ChatDetail: React.FC = () => {
           const foundDoctor: DoctorItem = {
             id: chatItem.id,
             name: chatItem.name,
+            gender: chatItem.gender,
             avatar: chatItem.avatar,
             style: chatItem.style,
             color: chatItem.color,
@@ -108,9 +111,16 @@ const ChatDetail: React.FC = () => {
     navigate(-1)
   }, [navigate])
 
-  const handleFileClick = useCallback(() => {
-    console.log('file')
-  }, [])
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length > 0) {
+      setAttachments([files[0]])
+    }
+  }
+
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index))
+  }
 
   const handleSendMessage = useCallback(async () => {
     if (!doctorState) {
@@ -118,25 +128,26 @@ const ChatDetail: React.FC = () => {
       return
     }
 
-    if (inputMessage.trim() === '') return
+    if (inputMessage.trim() === '' && attachments.length === 0) return
 
     const messageToSend = inputMessage.trim()
     setInputMessage('')
+    setAttachments([])
 
     try {
       // 添加用户消息
       await addMessage(messageToSend)
 
       // 获取 GPT 回复
-      const response = await sendGPTMessage(messageToSend)
-      if (response) {
-        // GPT 回复由 useChat 中的流式更新处理，不需要这里添加
-      }
+      // const response = await sendGPTMessage(messageToSend, attachments)
+      // if (response) {
+      // GPT 回复由 useChat 中的流式更新处理，不需要这里添加
+      // }
     } catch (err) {
       console.error('Error sending message:', err)
       // 错误已经在 hooks 中处理
     }
-  }, [inputMessage, addMessage, sendGPTMessage, doctorState])
+  }, [inputMessage, addMessage, sendGPTMessage, doctorState, attachments])
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {
@@ -205,7 +216,7 @@ const ChatDetail: React.FC = () => {
   const handleRetry = useCallback(async () => {
     // 清除之前的错误消息
     // 弹出提示，重新发起请求
-    toast.info('正在重试...')
+    toast.info('Retrying...')
     try {
       await sendGPTMessage(messages[messages.length - 2]?.text || '')
     } catch (err) {
@@ -269,63 +280,103 @@ const ChatDetail: React.FC = () => {
         {messages.length === 0 && isTyping && (
           <div className={styles.loadingMessage}>
             <div className={styles.typingIndicator}>
-              <span></span>
-              <span></span>
-              <span></span>
+              <span />
+              <span />
+              <span />
             </div>
           </div>
         )}
       </div>
 
       {/* 底部输入区域 */}
-      <div className={styles.inputArea}>
-        <button
-          className={classNames(styles.actionButton, styles.fileButton, {
-            [styles.disabled]: isRecording
-          })}
-          onClick={handleFileClick}
-          disabled={isRecording}
-        >
-          <Icon icon="fa-solid:paperclip" />
-        </button>
-        <button
-          className={classNames(styles.actionButton, styles.micButton, {
-            [styles.recording]: isRecording
-          })}
-          onClick={handleVoiceRecording}
-        >
-          <Icon
-            className={styles.micButtonIcon}
-            icon={isRecording ? 'pajamas:stop' : 'fa-solid:microphone'}
+      <div className={styles.bottomArea}>
+        {/* 显示选定的文件 */}
+        {attachments.length > 0 && (
+          <div className={styles.attachmentsList}>
+            {attachments.map((file, index) => (
+              <div key={index} className={styles.attachmentItem}>
+                <span>{file.name}</span>
+                <button
+                  onClick={() => {
+                    removeAttachment(index)
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = ''
+                    }
+                  }}
+                >
+                  <Icon icon="gg:close-o" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className={styles.inputArea}>
+          <button
+            className={classNames(styles.actionButton, styles.fileButton, {
+              [styles.disabled]:
+                attachments.length > 0 ||
+                isRecording ||
+                isProcessing ||
+                isLoading ||
+                isUserTyping
+            })}
+            onClick={() => fileInputRef.current?.click()}
+            disabled={
+              attachments.length > 0 ||
+              isRecording ||
+              isProcessing ||
+              isLoading ||
+              isUserTyping
+            }
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              className={styles.fileInput}
+              accept="image/*"
+            />
+            <Icon icon="fa-solid:paperclip" />
+          </button>
+          <button
+            className={classNames(styles.actionButton, styles.micButton, {
+              [styles.recording]: isRecording
+            })}
+            onClick={handleVoiceRecording}
+          >
+            <Icon
+              className={styles.micButtonIcon}
+              icon={isRecording ? 'pajamas:stop' : 'fa-solid:microphone'}
+            />
+            {isRecording && (
+              <span className={styles.recordingTime}>
+                {formatTime(recordingTime)}
+              </span>
+            )}
+          </button>
+          <Input
+            className={styles.inputer}
+            value={inputMessage}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyPress}
+            placeholder="Type a message…"
+            disabled={isRecording || isProcessing || isLoading || isUserTyping}
           />
-          {isRecording && (
-            <span className={styles.recordingTime}>
-              {formatTime(recordingTime)}
-            </span>
-          )}
-        </button>
-        <Input
-          className={styles.inputer}
-          value={inputMessage}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyPress}
-          placeholder="Type a message…"
-          disabled={isRecording || isProcessing || isLoading || isUserTyping}
-        />
-        <button
-          className={classNames(styles.actionButton, styles.sendButton)}
-          disabled={
-            inputMessage.trim() === '' ||
-            isRecording ||
-            isProcessing ||
-            isLoading ||
-            isUserTyping ||
-            !doctorState
-          }
-          onClick={handleSendMessage}
-        >
-          <Icon icon="fa-solid:paper-plane" />
-        </button>
+          <button
+            className={classNames(styles.actionButton, styles.sendButton)}
+            disabled={
+              inputMessage.trim() === '' ||
+              isRecording ||
+              isProcessing ||
+              isLoading ||
+              isUserTyping ||
+              !doctorState
+            }
+            onClick={handleSendMessage}
+          >
+            <Icon icon="fa-solid:paper-plane" />
+          </button>
+        </div>
       </div>
     </div>
   )

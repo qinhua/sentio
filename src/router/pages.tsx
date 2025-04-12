@@ -1,9 +1,6 @@
 import { lazy } from 'react'
 import Loadable from './Loadable'
 
-// Login
-export const PageLogin = Loadable(lazy(() => import('@/pages/Login/index')))
-
 // Welcome
 export const PageWelcome = Loadable(lazy(() => import('@/pages/Welcome/index')))
 
