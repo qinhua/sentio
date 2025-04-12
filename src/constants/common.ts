@@ -9,6 +9,8 @@ import Doctor3 from '@/assets/img/doctor/doctor3.jpg'
 import Doctor4 from '@/assets/img/doctor/doctor4.jpg'
 import Doctor5 from '@/assets/img/doctor/doctor5.jpg'
 import { DoctorItem } from '@/pages/ChatDetail/types'
+import { EnumUserGender } from '@/enum/common'
+
 export const HEADER_HEIGHT = 50
 
 export const USER_AVATAR_URL = [Avatar1, Avatar2, Avatar3, Avatar4, Avatar5]
@@ -17,7 +19,7 @@ export const DOCTOR_LIST: DoctorItem[] = [
   {
     id: 1,
     name: '林澜',
-    gender: 'female',
+    gender: EnumUserGender.FEMALE,
     avatar: Doctor1,
     color: '#e9c2fe',
     style: '温柔倾听型',
@@ -31,7 +33,7 @@ export const DOCTOR_LIST: DoctorItem[] = [
   {
     id: 2,
     name: '江行',
-    gender: 'female',
+    gender: EnumUserGender.FEMALE,
     avatar: Doctor2,
     color: ' #95d8fb',
     style: '理性分析型',
@@ -45,7 +47,7 @@ export const DOCTOR_LIST: DoctorItem[] = [
   {
     id: 3,
     name: '洛尘',
-    gender: 'male',
+    gender: EnumUserGender.MALE,
     avatar: Doctor3,
     color: '#badd85',
     style: '灵性启发型',
@@ -59,7 +61,7 @@ export const DOCTOR_LIST: DoctorItem[] = [
   {
     id: 4,
     name: '苏桐',
-    gender: 'male',
+    gender: EnumUserGender.MALE,
     avatar: Doctor4,
     color: '#ff7676',
     style: '温和教练型',
@@ -73,7 +75,7 @@ export const DOCTOR_LIST: DoctorItem[] = [
   {
     id: 5,
     name: '黎晗',
-    gender: 'female',
+    gender: EnumUserGender.FEMALE,
     avatar: Doctor5,
     color: '#3d3d3d',
     style: '洞察深刻型',
