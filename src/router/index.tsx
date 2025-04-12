@@ -4,7 +4,6 @@ import RequireAuth from '@/router/RequireAuth'
 import AuthGuard from '@/router/AuthGuard'
 import { IS_DEV_ENV } from '@/config/env'
 import {
-  PageLogin,
   PageWelcome,
   PageCompleteInfo,
   PageDoctorList,

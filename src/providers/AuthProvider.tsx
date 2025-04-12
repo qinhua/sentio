@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { USER_AVATAR_URL } from '@/constants/common'
 import { getUserInfo, userLogin } from '@/apis/user'
 import { IUserProfile } from '@/types/module/user'
+import { EnumUserGender } from '@/enum/common'
 import { v4 as uuidv4 } from 'uuid'
 
 export interface IAccountInfo {
@@ -21,7 +22,7 @@ export interface IAccountInfo {
 
 export interface IUserProfileFormData {
   nickname: string
-  gender: string
+  gender: EnumUserGender
   age: number
   // bio: string
   avatar_index: number

@@ -25,9 +25,9 @@ export const PageChatDetail = Loadable(
 )
 
 // CourseList
-export const PageCourseList = Loadable(
-  lazy(() => import('@/pages/CourseList/index'))
-)
+// export const PageCourseList = Loadable(
+//   lazy(() => import('@/pages/CourseList/index'))
+// )
 
 // Profile
 export const PageProfile = Loadable(lazy(() => import('@/pages/Profile/index')))
