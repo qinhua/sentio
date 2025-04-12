@@ -60,7 +60,7 @@ const CompleteInfo: React.FC = () => {
         avatar_url: USER_AVATAR_URL[selectedAvatarIndex],
         nickname,
         gender,
-        age
+        age: Number(age)
         // bio
       })
 

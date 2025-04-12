@@ -1,8 +1,8 @@
-import React, { useRef, useEffect, useCallback, useMemo } from 'react'
+import React, { useRef, useEffect, useCallback, useMemo, useState } from 'react'
 import { Avatar, Input, Toast, Dialog } from 'antd-mobile'
 import MessageCard from './component/MessageCard'
 import { Icon } from '@iconify/react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { useChatList } from '../ChatList/hooks/useChatList'
 import { useVoice } from './hooks/useVoice'
 import { useChat } from './hooks/useChat'
@@ -16,14 +16,56 @@ const ChatDetail: React.FC = () => {
   const location = useLocation()
   const doctor = location.state?.doctor as DoctorItem
   const messageListRef = useRef<HTMLDivElement>(null)
-  const [inputMessage, setInputMessage] = React.useState('')
+  const [inputMessage, setInputMessage] = useState('')
+  const { isLoaded, updateChat, getChatById } = useChatList()
+  const [isInitialized, setIsInitialized] = useState(false)
   const navigate = useNavigate()
+
+  // 如果没有通过路由参数传递doctor，尝试从chatList获取
+  useEffect(() => {
+    if (!doctor && isLoaded) {
+      const chatId = parseInt(location.pathname.split('/').pop() || '-1', 10)
+      if (chatId > 0) {
+        const chatItem = getChatById(chatId)
+        if (chatItem) {
+          // 构建doctor对象
+          const foundDoctor: DoctorItem = {
+            id: chatItem.id,
+            name: chatItem.name,
+            avatar: chatItem.avatar,
+            style: chatItem.style,
+            color: chatItem.color,
+            method: chatItem.method,
+            expertise: chatItem.expertise,
+            bio: chatItem.bio,
+            prompt_style: chatItem.prompt_style,
+            prompt: chatItem.prompt
+          }
+          // 设置状态
+          setDoctorState(foundDoctor)
+        } else {
+          // 找不到对应的聊天，返回列表页
+          toast.error('Can not find the chat')
+          navigate('/')
+        }
+      }
+    } else if (doctor) {
+      setIsInitialized(true)
+    }
+  }, [isLoaded, location.pathname, doctor, navigate, getChatById])
+
+  // 设置医生状态
+  const [doctorState, setDoctorState] = useState<DoctorItem | null>(
+    doctor || null
+  )
+
   const {
-    messages,
-    sendMessage: addMessage,
     isTyping,
-    isUserTyping
-  } = useChat(doctor)
+    isUserTyping,
+    messages,
+    sendMessage: addMessage
+  } = useChat(doctorState as DoctorItem)
+
   const {
     isRecording,
     recordingTime,
@@ -34,49 +76,35 @@ const ChatDetail: React.FC = () => {
     formatTime,
     clearTranscribedText
   } = useVoice()
-  const {
-    isLoading,
-    error,
-    sendMessage: sendGPTMessage
-    // sendVoiceMessage
-  } = useGPT()
-  const { updateChat } = useChatList()
+
+  const { isLoading, error, sendMessage: sendGPTMessage } = useGPT()
 
   // 显示错误提示
   useEffect(() => {
     if (error) {
       toast.error(error)
-      // Dialog.alert({
-      //   content: error,
-      //   closeOnMaskClick: true
-      //   // actions: [
-      //   //   {
-      //   //     key: 'confirm',
-      //   //     text: '我知道了',
-      //   //     onClick: () => {
-      //   //       // 可以在这里添加重试逻辑
-      //   //     }
-      //   //   }
-      //   // ]
-      // })
     }
   }, [error])
 
   // 更新聊天列表
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && doctorState && isInitialized) {
       const lastMessage = messages[messages.length - 1]
       updateChat({
-        chat_id: doctor.id,
-        ...doctor,
+        chat_id: doctorState.id,
+        ...doctorState,
         last_message: lastMessage.text,
         time: Date.now(),
         unread: lastMessage.sender === 'counselor' ? 1 : 0
       })
     }
-  }, [messages, doctor, updateChat])
+  }, [messages, doctorState, updateChat, isInitialized])
 
   const handleBack = useCallback(() => {
+    // 停止所有语音播放
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel()
+    }
     navigate(-1)
   }, [navigate])
 
@@ -85,26 +113,30 @@ const ChatDetail: React.FC = () => {
   }, [])
 
   const handleSendMessage = useCallback(async () => {
+    if (!doctorState) {
+      toast.error('Chat initialization failed')
+      return
+    }
+
     if (inputMessage.trim() === '') return
 
     const messageToSend = inputMessage.trim()
     setInputMessage('')
 
     try {
-      // 添加用户消息到界面
-      addMessage(messageToSend)
+      // 添加用户消息
+      await addMessage(messageToSend)
 
       // 获取 GPT 回复
       const response = await sendGPTMessage(messageToSend)
       if (response) {
-        // 添加 GPT 回复到界面
-        addMessage(response)
+        // GPT 回复由 useChat 中的流式更新处理，不需要这里添加
       }
     } catch (err) {
       console.error('Error sending message:', err)
-      // 错误已经在 useGPT 中处理，这里不需要额外处理
+      // 错误已经在 hooks 中处理
     }
-  }, [inputMessage, addMessage, sendGPTMessage])
+  }, [inputMessage, addMessage, sendGPTMessage, doctorState])
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {
@@ -139,10 +171,9 @@ const ChatDetail: React.FC = () => {
   useEffect(() => {
     if (transcribedText && !isProcessing) {
       setInputMessage(transcribedText)
-      // handleSendMessage()
       clearTranscribedText()
     }
-  }, [transcribedText, isProcessing])
+  }, [transcribedText, isProcessing, clearTranscribedText])
 
   // 滚动到底部
   useEffect(() => {
@@ -170,13 +201,36 @@ const ChatDetail: React.FC = () => {
     }
   }, [])
 
+  // 重试发送消息
+  const handleRetry = useCallback(async () => {
+    // 清除之前的错误消息
+    // 弹出提示，重新发起请求
+    toast.info('正在重试...')
+    try {
+      await sendGPTMessage(messages[messages.length - 2]?.text || '')
+    } catch (err) {
+      console.error('Error retrying message:', err)
+    }
+  }, [messages, sendGPTMessage])
+
   // 使用 useMemo 缓存消息列表，避免不必要的重新渲染
   const messageCards = useMemo(() => {
-    return messages.map(msg => <MessageCard key={msg.id} data={msg} />)
-  }, [messages])
+    return messages.map(msg => (
+      <MessageCard
+        key={msg.id}
+        data={msg}
+        onRetry={msg.sender === 'counselor' ? handleRetry : undefined}
+      />
+    ))
+  }, [messages, handleRetry])
 
-  if (!doctor) {
-    return null
+  if (!doctorState) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <div>Loading...</div>
+      </div>
+    )
   }
 
   return (
@@ -191,18 +245,18 @@ const ChatDetail: React.FC = () => {
         <div className={styles.doctorInfo}>
           <Avatar
             className={styles.avatar}
-            src={doctor.avatar}
-            alt={doctor.name}
+            src={doctorState.avatar}
+            alt={doctorState.name}
           />
           <div className={styles.info}>
-            <div className={styles.name}>{doctor.name}</div>
+            <div className={styles.name}>{doctorState.name}</div>
             <div
               className={styles.style}
               style={{
-                backgroundColor: doctor.color
+                backgroundColor: doctorState.color
               }}
             >
-              {doctor.style}
+              {doctorState.style}
             </div>
           </div>
         </div>
@@ -230,6 +284,7 @@ const ChatDetail: React.FC = () => {
             [styles.disabled]: isRecording
           })}
           onClick={handleFileClick}
+          disabled={isRecording}
         >
           <Icon icon="fa-solid:paperclip" />
         </button>
@@ -264,7 +319,8 @@ const ChatDetail: React.FC = () => {
             isRecording ||
             isProcessing ||
             isLoading ||
-            isUserTyping
+            isUserTyping ||
+            !doctorState
           }
           onClick={handleSendMessage}
         >

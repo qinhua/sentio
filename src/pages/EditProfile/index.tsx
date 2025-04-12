@@ -61,7 +61,7 @@ const EditProfile: React.FC = () => {
         avatar_url: USER_AVATAR_URL[selectedAvatarIndex],
         nickname,
         gender,
-        age
+        age: Number(age)
         // bio,
       })
 
@@ -79,7 +79,7 @@ const EditProfile: React.FC = () => {
 
     setNickname(profile.nickname)
     setGender(profile.gender)
-    setAge(profile.age || '')
+    setAge(profile.age.toString())
     // setBio(profile.bio || '')
     setSelectedAvatarIndex(profile?.avatar_index)
   }, [profile])

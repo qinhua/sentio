@@ -10,15 +10,20 @@ interface MessageCardProps {
   data: MessageItem
   className?: string
   onClick?: (data: MessageItem) => void
+  onRetry?: () => void
 }
 
 const MessageCard: React.FC<MessageCardProps> = ({
   data,
   className,
-  onClick
+  onClick,
+  onRetry
 }) => {
   const { isLoading, isFirstOfDay, avatar, sender, text, date, time } = data
   const { speak, stopSpeaking, isSpeaking } = useTextToSpeech()
+  const isError =
+    text.includes('Sorry, something went wrong') ||
+    text.includes('Message send failed')
 
   // 监听页面可见性变化
   useEffect(() => {
@@ -41,6 +46,13 @@ const MessageCard: React.FC<MessageCardProps> = ({
       stopSpeaking()
     } else {
       speak(text)
+    }
+  }
+
+  const handleRetryClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onRetry) {
+      onRetry()
     }
   }
 
@@ -70,7 +82,8 @@ const MessageCard: React.FC<MessageCardProps> = ({
             className={classNames(styles.bubble, {
               [styles.userBubble]: sender === 'user',
               [styles.counselorBubble]: sender === 'counselor',
-              [styles.loadingBubble]: isLoading && !text
+              [styles.loadingBubble]: isLoading && !text,
+              [styles.errorBubble]: isError
             })}
           >
             {isLoading && !text ? (
@@ -84,7 +97,16 @@ const MessageCard: React.FC<MessageCardProps> = ({
                 <div className={styles.messageText}>
                   {text || (isLoading ? '正在思考...' : '')}
                 </div>
-                {sender === 'counselor' && text && (
+                {isError && onRetry && (
+                  <button
+                    className={styles.retryButton}
+                    onClick={handleRetryClick}
+                    title="重试"
+                  >
+                    <Icon icon="mdi:refresh" className={styles.retryIcon} />
+                  </button>
+                )}
+                {sender === 'counselor' && text && !isError && (
                   <button
                     className={classNames(styles.speakButton, {
                       [styles.speaking]: isSpeaking

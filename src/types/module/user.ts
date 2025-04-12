@@ -3,7 +3,7 @@ export interface IUserProfile {
   nickname: string
   gender: string
   // bio: string
-  age: string
+  age: number
   avatar_index: number
   avatar_url?: string
   token?: string

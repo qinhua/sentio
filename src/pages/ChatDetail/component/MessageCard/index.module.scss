@@ -38,7 +38,8 @@
       white-space: pre-line;
     }
 
-    .speakButton {
+    .speakButton,
+    .retryButton {
       cursor: pointer;
       position: absolute;
       right: -8px;
@@ -65,7 +66,15 @@
       }
     }
 
-    .speakIcon {
+    .retryButton {
+      background: #e74c3c;
+      color: white;
+      right: -8px;
+      top: -6px;
+    }
+
+    .speakIcon,
+    .retryIcon {
       font-size: 16px;
     }
 
@@ -83,6 +92,12 @@
       .speakButton {
         color: rgba(255, 255, 255, 0.8);
       }
+    }
+
+    .errorBubble {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: #e74c3c;
+      border: 1px solid rgba(231, 76, 60, 0.3);
     }
 
     .loadingBubble {

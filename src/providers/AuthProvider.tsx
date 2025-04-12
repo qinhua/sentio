@@ -22,8 +22,8 @@ export interface IAccountInfo {
 export interface IUserProfileFormData {
   nickname: string
   gender: string
+  age: number
   // bio: string
-  age: string
   avatar_index: number
   avatar_url: string
 }
