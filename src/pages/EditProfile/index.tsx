@@ -13,6 +13,7 @@ import {
 import { useAuthProviderContext } from '@/providers/AuthProvider'
 import { USER_AVATAR_URL } from '@/constants/common'
 import { useNavigate } from 'react-router-dom'
+import { EnumUserGender } from '@/enum/common'
 import { PATH } from '@/constants/path'
 import { toast } from 'react-toastify'
 import styles from './index.module.scss'
@@ -21,7 +22,7 @@ const EditProfile: React.FC = () => {
   const { profile, updateUserProfile } = useAuthProviderContext()
   const refSwiper = useRef<SwiperRef | null>(null)
   const [nickname, setNickname] = useState('')
-  const [gender, setGender] = useState('')
+  const [gender, setGender] = useState<EnumUserGender | null>(null)
   const [bio, setBio] = useState('')
   const [age, setAge] = useState('')
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(2)
@@ -36,7 +37,7 @@ const EditProfile: React.FC = () => {
         setNickname(value)
         break
       case 'gender':
-        setGender(value)
+        setGender(value as EnumUserGender)
         break
       case 'age':
         setAge(value)

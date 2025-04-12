@@ -1,22 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { UTCTimeResponse } from '@/types/request/common'
 import numeral from 'numeral'
 import dayjs from 'dayjs'
-
-export const isProtocolUrl = (url: string) => /^http(s)?:\/\//.test(url)
-
-export async function fetchUTCTime(): Promise<number> {
-  try {
-    const timeResponse = await fetch(
-      `https://worldtimeapi.org/api/timezone/etc/UTC`
-    )
-    const timeResponseData: UTCTimeResponse = await timeResponse.json()
-    return timeResponseData.unixtime
-  } catch (err: any) {
-    console.error('err when fetching utc time', err)
-    return Date.now() / 1000
-  }
-}
 
 export const sleep = (millisecond: number) =>
   new Promise(resolve => setTimeout(() => resolve(true), millisecond))
